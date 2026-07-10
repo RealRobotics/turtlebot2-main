@@ -1,0 +1,33 @@
+repositories:
+  ecl-core:
+    type: git
+    url: git@github.com:RealRobotics/turtlebot2-ecl-core.git
+    version: ros-jazzy
+  ecl_lite:
+    type: git
+    url: git@github.com:RealRobotics/turtlebot2-ecl-lite.git
+    version: ros-jazzy
+  ecl_tools:
+    type: git
+    url: git@github.com:RealRobotics/turtlebot2-ecl-tools.git
+    version: ros-jazzy
+  kobuki_core:
+    type: git
+    url: git@github.com:RealRobotics/turtlebot2-kobuki-core.git
+    version: ros-jazzy
+  kobuki_ros:
+    type: git
+    url: git@github.com:RealRobotics/turtlebot2-kobuki-ros.git
+    version: ros-jazzy
+  kobuki_ros_interfaces:
+    type: git
+    url: git@github.com:RealRobotics/turtlebot2-kobuki-ros-interfaces.git
+    version: devel
+  sophus:
+    type: git
+    url: git@github.com:RealRobotics/turtlebot2-sophus.git
+    version: ros-jazzy
+  turtlebot2-main:
+    type: git
+    url: git@github.com:RealRobotics/turtlebot2-main.git
+    version: main
