@@ -1,5 +1,5 @@
 repositories:
-  ecl-core:
+  ecl_core:
     type: git
     url: git@github.com:RealRobotics/turtlebot2-ecl-core.git
     version: ros-jazzy
