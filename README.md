@@ -10,7 +10,7 @@ Tested using ROS Jazzy Jalico and Ubuntu Noble Number (24.04LTS).
 
 You need ROS Jazzy installed natively on your compupter.  Alternatively, you can use the Jazzy [Docker scripts](https://github.com/RealRobotics/ros-docker-scripts/tree/jazzy).
 
-To setup the workspace and do the first build, open the [vars.bash][scripts/vars.bash] and change this line:
+To setup the workspace and do the first build, open the [vars.bash](scripts/vars.bash) and change this line:
 
 ```bash
 WORKSPACE_DIR=${HOME}/ws
