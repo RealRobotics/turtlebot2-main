@@ -47,11 +47,13 @@ fi
 git config --global credential.helper "cache"
 
 # Use VCS to create the workspace.
-mkdir -p ${ws_dir}
-cd ${ws_dir}
+mkdir -p ${ws_dir}/src
+cd ${ws_dir}/src
+echo "Cloning repos into the workspace..."
 # Use one worker to make it easier to debug.
 vcs --workers=1 import < ${repos_file}
 
+echo "Done"
 echo
 echo "$0 took $SECONDS seconds."
 echo "All repos created and checked out in the '${ws_dir}' directory using the hashes used for the release."

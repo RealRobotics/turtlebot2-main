@@ -1,7 +1,7 @@
 # Variables for other scripts.
 
 # Change this if you want to build your code elsewhere on the host.
-WORKSPACE_DIR=${HOME}/ws
+WORKSPACE_DIR=${HOME}/workspaces/ros2_jazzy_ws
 
 # Needed during builds.
 UBUNTU_RELEASE=noble
