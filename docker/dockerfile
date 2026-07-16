@@ -1,0 +1,82 @@
+# Use this to build and run Gazebo 11 with micro-ROS.
+
+FROM osrf/ros:lyrical-desktop
+
+ENV ROS2_DISTRO=lyrical
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Keep the container username stable but allow host UID/GID mapping.
+ARG UNAME=build
+ARG UID=1000
+ARG GID=1000
+
+# Install basic tools.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        sudo \
+        vim \
+        nano \
+        wget \
+        apt-utils \
+        gdb \
+        less \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install extra ROS2 packages.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3-vcstool \
+        ros-${ROS2_DISTRO}-diagnostic-updater \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install packages for building and running TurtleBot2 depth camera.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgflags-dev nlohmann-json3-dev  \
+    ros-${ROS_DISTRO}-image-transport \
+    ros-${ROS_DISTRO}-image-transport-plugins \
+    ros-${ROS_DISTRO}-compressed-image-transport \
+    ros-${ROS_DISTRO}-image-publisher \
+    ros-${ROS_DISTRO}-camera-info-manager \
+    ros-${ROS_DISTRO}-diagnostic-updater \
+    ros-${ROS_DISTRO}-diagnostic-msgs \
+    ros-${ROS_DISTRO}-statistics-msgs \
+    ros-${ROS_DISTRO}-backward-ros libdw-dev\
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Gazebo via the ROS Lyrical metapackage.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ros-${ROS2_DISTRO}-ros-gz \
+    && rm -rf /var/lib/apt/lists/*
+
+# nvidia-container-runtime
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility,display,video,graphics
+ENV NVIDIA_REQUIRE_CUDA="cuda>=11.0 brand=tesla,driver>=450,driver<460"
+
+# Create/update user with UID and GID matching the host.
+# This allows deleting build products created in bind-mounted source trees.
+RUN if getent group "$UNAME" >/dev/null; then \
+        groupmod -g "$GID" "$UNAME"; \
+    else \
+        groupadd -g "$GID" -o "$UNAME"; \
+    fi && \
+    if id -u "$UNAME" >/dev/null 2>&1; then \
+        usermod -u "$UID" -g "$GID" -m -s /bin/bash "$UNAME"; \
+    else \
+        useradd -u "$UID" -g "$GID" -m -s /bin/bash "$UNAME"; \
+    fi && \
+    mkdir -p /etc/sudoers.d/ && \
+    echo "$UNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$UNAME && \
+    chmod 0440 /etc/sudoers.d/$UNAME
+
+ENV HOME=/home/$UNAME
+
+# Source ROS2 setup script for each shell and vcstool auto complete.
+RUN echo ". /opt/ros/lyrical/setup.bash" > /home/$UNAME/.bash_aliases && \
+    echo ". /usr/share/vcstool-completion/vcs.bash" >> /home/$UNAME/.bash_aliases
+
+# Change ownership of home directory to match mapped UID/GID.
+RUN chown -R $UID:$GID /home/$UNAME/
+
+# Change to mapped user.
+USER $UNAME
