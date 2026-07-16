@@ -4,7 +4,9 @@ The top level repo for the TurtleBot2 code.  Builds the workspace and the Kobuki
 
 ![TurtleBot2](turtlebot_2_lg.png)
 
-Tested using ROS Jazzy Jalico and Ubuntu Noble Number (24.04LTS).
+Tested using
+* ROS Jazzy Jalico and Ubuntu Noble Number (24.04LTS)
+* ROS Lyrical and Ubuntu 26.04LTS (using the docker in this repo).
 
 ## Setup and building
 

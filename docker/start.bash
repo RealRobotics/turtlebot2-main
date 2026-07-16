@@ -22,36 +22,17 @@ then
     fi
 else
     # Container does not exist.
-    mkdir -p ${WORKSPACE_DIR}
-    XDG_RUNTIME_DIR=/tmp/runtime-build
-    # Setup X window for the container to use.
-    XAUTH=/tmp/.docker.xauth
-    if [ ! -f $XAUTH ]
-    then
-        xauth_list=$(xauth nlist :0 | sed -e 's/^..../ffff/')
-        if [ ! -z "$xauth_list" ]
-        then
-            echo $xauth_list | xauth -f $XAUTH nmerge -
-        else
-            touch $XAUTH
-        fi
-        chmod a+r $XAUTH
-    fi
-
     docker container run \
         --detach \
         --tty \
         --net=host \
-        --name ${CONTAINER_NAME} \
-        --volume ${WORKSPACE_DIR}:/home/build/ws \
         --env="DISPLAY=$DISPLAY" \
-        --env="XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" \
-        --env="QT_X11_NO_MITSHM=1" \
-        --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-        --env="XAUTHORITY=$XAUTH" \
-        --volume="$XAUTH:$XAUTH" \
-        --tmpfs "$XDG_RUNTIME_DIR:mode=700" \
-        --gpus all \
+        --env ROS_DOMAIN_ID \
+        --device-cgroup-rule='c 13:* rmw' \
+        -v /dev/input:/dev/input \
+        --volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
+        --name ${CONTAINER_NAME} \
+        --volume ${WORKSPACE_DIR}:/home/ubuntu/ws \
         ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null
     if [ $? == 0 ]
     then
