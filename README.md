@@ -5,41 +5,21 @@ The top level repo for the TurtleBot2 code.  Builds the workspace and the Kobuki
 ![TurtleBot2](turtlebot_2_lg.png)
 
 Tested using
-* ROS Jazzy Jalico and Ubuntu Noble Number (24.04LTS)
+
 * ROS Lyrical and Ubuntu 26.04LTS (using the docker in this repo).
+
+## Objective
+
+To run the Turtlebot2 using a Raspberry Pi4.  The robot should then be able to map the room and navigate between two set points avoiding obstacles and replanning as required.
 
 ## Setup and building
 
-You need ROS Jazzy installed natively on your computer.  Alternatively, you can use the Jazzy [Docker scripts](https://github.com/RealRobotics/ros-docker-scripts/tree/jazzy).
+TO DO
 
-If you don't have ROS 2 installed natively, then you'll need to install `vcstool` manually using `sudo apt install vcstool`. 
+Rebuild docker after sorting out ROS_DISTRO stuff.
 
-To setup the workspace and do the first build, open the [vars.bash](scripts/vars.bash) and change this line:
+Orbbec camera and random walker build issues.
 
-```bash
-WORKSPACE_DIR=${HOME}/ws
-```
-
-to point at the place you like, e.g. I have many workspaces, so use something like this:
-
-```bash
-WORKSPACE_DIR=${HOME}/workspaces/my_cool_ws
-```
-
-Save and exit.
-
-**Getting the workspace directory right is very important when using the Jazzy docker scripts.**
-
-Then run the following script:
-
-```bash
-cd scripts/workspace
-./setup_ws.bash
-```
-
-Note: This will clone all the repos and then build the code.
-
-Subsequent builds can be done using `colcon build`.
 
 ## Running the code
 

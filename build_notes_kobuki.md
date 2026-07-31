@@ -2,10 +2,10 @@
 
 ## Setup
 
-Install ROS Jazzy desktop release.  Add the following packages:
+Install ROS Lyrical desktop release.  Add the following packages:
 
 ```bash
-sudo apt install ros-jazzy-diagnostics
+sudo apt install ros-lyrical-diagnostics
 ```
 
 Did this:
@@ -948,4 +948,56 @@ Fixed remaining build errors in `kobuki_node`.
 
 Taken another 90 minutes.  Now to run it!
 
+Did a clean build and the build of `sophus` failed.  There were many errors like this:
+
+```bash
+$ colcon build --packages-select=sophus --event-handlers=console_cohesion+ --cmake-args -DCMAKE_VERBOSE_MAKEFILE=ON --executor sequential
+Starting >>> sophus
+--- output: sophus
+Change Dir: '/home/ubuntu/ws/build/sophus'
+...
+[ 92%] Built target test_geometry
+In file included from /usr/lib/gcc/x86_64-linux-gnu/15/include/emmintrin.h:31,
+                 from /usr/include/eigen3/Eigen/src/Core/util/ConfigureVectorization.h:346,
+                 from /usr/include/eigen3/Eigen/Core:22,
+                 from /usr/include/eigen3/unsupported/Eigen/MatrixFunctions:17,
+                 from /home/ubuntu/ws/src/sophus/test/core/test_sim2.cpp:3:
+In function ‘__m128 _mm_loadu_ps(const float*)’,
+    inlined from ‘Packet Eigen::internal::ploadu(const typename unpacket_traits<T>::type*) [with Packet = __vector(4) float]’ at /usr/include/eigen3/Eigen/src/Core/arch/SSE/PacketMath.h:739:22,
+    inlined from ‘Packet Eigen::internal::ploadt(const typename unpacket_traits<T>::type*) [with Packet = __vector(4) float; int Alignment = 0]’ at /usr/include/eigen3/Eigen/src/Core/GenericPacketMath.h:969:26,
+    inlined from ‘PacketType Eigen::internal::evaluator<Eigen::PlainObjectBase<Derived> >::packet(Eigen::Index, Eigen::Index) const [with int LoadMode = 0; PacketType = __vector(4) float; Derived = Eigen::Matrix<float, 2, 1>]’ at /usr/include/eigen3/Eigen/src/Core/CoreEvaluators.h:238:42,
+    inlined from ‘void Eigen::internal::generic_dense_assignment_kernel<DstEvaluatorTypeT, SrcEvaluatorTypeT, Functor, Version>::assignPacket(Eigen::Index, Eigen::Index) [with int StoreMode = 16; int LoadMode = 0; PacketType = __vector(4) float; DstEvaluatorTypeT = Eigen::internal::evaluator<Eigen::Block<Eigen::Matrix<float, 4, 1>, -1, -1, false> >; SrcEvaluatorTypeT = Eigen::internal::evaluator<Eigen::Matrix<float, 2, 1> >; Functor = Eigen::internal::assign_op<float, float>; int Version = 0]’ at /usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:675:116,
+    inlined from ‘void Eigen::internal::generic_dense_assignment_kernel<DstEvaluatorTypeT, SrcEvaluatorTypeT, Functor, Version>::assignPacketByOuterInner(Eigen::Index, Eigen::Index) [with int StoreMode = 16; int LoadMode = 0; PacketType = __vector(4) float; DstEvaluatorTypeT = Eigen::internal::evaluator<Eigen::Block<Eigen::Matrix<float, 4, 1>, -1, -1, false> >; SrcEvaluatorTypeT = Eigen::internal::evaluator<Eigen::Matrix<float, 2, 1> >; Functor = Eigen::internal::assign_op<float, float>; int Version = 0]’ at /usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:689:48,
+    inlined from ‘static void Eigen::internal::dense_assignment_loop<Kernel, 4, 0>::run(Kernel&) [with Kernel = Eigen::internal::generic_dense_assignment_kernel<Eigen::internal::evaluator<Eigen::Block<Eigen::Matrix<float, 4, 1>, -1, -1, false> >, Eigen::internal::evaluator<Eigen::Matrix<float, 2, 1> >, Eigen::internal::assign_op<float, float>, 0>]’ at /usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:572:86,
+    inlined from ‘void Eigen::internal::call_dense_assignment_loop(DstXprType&, const SrcXprType&, const Functor&) [with DstXprType = Eigen::Block<Eigen::Matrix<float, 4, 1>, -1, -1, false>; SrcXprType = Eigen::Matrix<float, 2, 1>; Functor = assign_op<float, float>]’ at /usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:785:37,
+    inlined from ‘static void Eigen::internal::Assignment<DstXprType, SrcXprType, Functor, Eigen::internal::Dense2Dense, Weak>::run(DstXprType&, const SrcXprType&, const Functor&) [with DstXprType = Eigen::Block<Eigen::Matrix<float, 4, 1>, -1, -1, false>; SrcXprType = Eigen::Matrix<float, 2, 1>; Functor = Eigen::internal::assign_op<float, float>; Weak = void]’ at /usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:954:31,
+    inlined from ‘void Eigen::internal::call_assignment_no_alias(Dst&, const Src&, const Func&) [with Dst = Eigen::Block<Eigen::Matrix<float, 4, 1>, -1, -1, false>; Src = Eigen::Matrix<float, 2, 1>; Func = assign_op<float, float>]’ at /usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:890:49,
+    inlined from ‘void Eigen::internal::call_assignment(Dst&, const Src&, const Func&, typename enable_if<(! evaluator_assume_aliasing<Src>::value), void*>::type) [with Dst = Eigen::Block<Eigen::Matrix<float, 4, 1>, -1, -1, false>; Src = Eigen::Matrix<float, 2, 1>; Func = assign_op<float, float>]’ at /usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:858:27,
+    inlined from ‘void Eigen::internal::call_assignment(Dst&, const Src&) [with Dst = Eigen::Block<Eigen::Matrix<float, 4, 1>, -1, -1, false>; Src = Eigen::Matrix<float, 2, 1>]’ at /usr/include/eigen3/Eigen/src/Core/AssignEvaluator.h:836:18,
+    inlined from ‘Derived& Eigen::MatrixBase<Derived>::operator=(const Eigen::DenseBase<OtherDerived>&) [with OtherDerived = Eigen::Matrix<float, 2, 1>; Derived = Eigen::Block<Eigen::Matrix<float, 4, 1>, -1, -1, false>]’ at /usr/include/eigen3/Eigen/src/Core/Assign.h:66:28,
+    inlined from ‘Eigen::CommaInitializer<MatrixType>::CommaInitializer(XprType&, const Eigen::DenseBase<OtherDerived>&) [with OtherDerived = Eigen::Matrix<float, 2, 1>; XprType = Eigen::Matrix<float, 4, 1>]’ at /usr/include/eigen3/Eigen/src/Core/CommaInitializer.h:48:51,
+    inlined from ‘Eigen::CommaInitializer<Derived> Eigen::DenseBase<Derived>::operator<<(const Eigen::DenseBase<OtherDerived>&) [with OtherDerived = Eigen::Matrix<float, 2, 1>; Derived = Eigen::Matrix<float, 4, 1>]’ at /usr/include/eigen3/Eigen/src/Core/CommaInitializer.h:159:72,
+    inlined from ‘Sophus::Vector<typename Eigen::internal::traits<T>::Scalar, 4> Sophus::Sim2Base<Derived>::params() const [with Derived = Sophus::Sim2<float>]’ at /home/ubuntu/ws/src/sophus/sophus/sim2.hpp:278:7,
+    inlined from ‘bool Sophus::LieGroupTests<LieGroup_>::testRandomSmoke() [with LieGroup_ = Sophus::Sim2<float>]’ at /home/ubuntu/ws/src/sophus/test/core/tests.hpp:523:7,
+    inlined from ‘bool Sophus::LieGroupTests<LieGroup_>::doesLargeTestSetPass() [with LieGroup_ = Sophus::Sim2<float>]’ at /home/ubuntu/ws/src/sophus/test/core/tests.hpp:638:30,
+    inlined from ‘Sophus::enable_if_t<((bool)std::is_floating_point<S>::value), bool> Sophus::LieGroupTests<LieGroup_>::doAllTestsPass() [with S = float; LieGroup_ = Sophus::Sim2<float>]’ at /home/ubuntu/ws/src/sophus/test/core/tests.hpp:607:32,
+    inlined from ‘bool Sophus::Tests<Scalar>::testLieProperties() [with Scalar = float]’ at /home/ubuntu/ws/src/sophus/test/core/test_sim2.cpp:85:32,
+    inlined from ‘void Sophus::Tests<Scalar>::runAll() [with Scalar = float]’ at /home/ubuntu/ws/src/sophus/test/core/test_sim2.cpp:76:36,
+    inlined from ‘int Sophus::test_sim3()’ at /home/ubuntu/ws/src/sophus/test/core/test_sim2.cpp:216:24:
+/usr/lib/gcc/x86_64-linux-gnu/15/include/xmmintrin.h:982:23: error: array subscript ‘__m128_u[0]’ is partly outside array bounds of ‘Sophus::Vector<float, 2, 0> [1]’ {aka ‘Eigen::Matrix<float, 2, 1> [1]’} [-Werror=array-bounds=]
+  982 |   return *(__m128_u *)__P;
+      |                       ^~~
+    cc1plus: all warnings being treated as errors
+```
+
+As -werror is enabled, this warning stops the build.  Added this line to the CMakeLists.txt file so the bulid completes.
+
+```cmake
+add_definitions(-DEIGEN_DONT_ALIGN)
+```
+
+Not an ideal solution as the code should be fixed properly, but it is not my code so this will do for now.
+
 ## Running the code
+
+TODO
