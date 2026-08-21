@@ -161,3 +161,142 @@ The next problem was:
 CMake Error at CMakeLists.txt:123 (ament_target_dependencies):
   Unknown CMake command "ament_target_dependencies".
 ```
+
+Fixed.  Next problem is:
+
+```bash
+--- stderr: astra_camera
+CMake Error at CMakeLists.txt:121 (target_link_libraries):
+  Target "astra_camera" links to:
+
+    image_publisher::image_publisher
+
+  but the target was not found.  Possible reasons include:
+
+    * There is a typo in the target name.
+    * A find_package call is missing for an IMPORTED target.
+    * An ALIAS target is missing.
+```
+
+Spent a couple of hours going round in circles with Code's AI and Gemini.  The best version is getting these errors:
+
+```bash
+colcon build --packages-select astra_camera
+Starting >>> astra_camera
+--- stderr: astra_camera
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/uvc_camera_driver.cpp:15:10: fatal error: cv_bridge/cv_bridge.h: No such file or directory
+   15 | #include <cv_bridge/cv_bridge.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+gmake[2]: *** [CMakeFiles/astra_camera.dir/build.make:233: CMakeFiles/astra_camera.dir/src/uvc_camera_driver.cpp.o] Error 1
+gmake[2]: *** Waiting for unfinished jobs....
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/point_cloud_proc/point_cloud_xyz.cpp:37:10: fatal error: image_geometry/pinhole_camera_model.h: No such file or directory
+   37 | #include <image_geometry/pinhole_camera_model.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+gmake[2]: *** [CMakeFiles/astra_camera.dir/build.make:79: CMakeFiles/astra_camera.dir/src/point_cloud_proc/point_cloud_xyz.cpp.o] Error 1
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/point_cloud_proc/point_cloud_xyzrgb.cpp:35:10: fatal error: message_filters/subscriber.h: No such file or directory
+   35 | #include <message_filters/subscriber.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+gmake[2]: *** [CMakeFiles/astra_camera.dir/build.make:93: CMakeFiles/astra_camera.dir/src/point_cloud_proc/point_cloud_xyzrgb.cpp.o] Error 1
+In file included from /home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/ros_service.cpp:17:
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/include/astra_camera/utils.h:18:10: fatal error: tf2/LinearMath/Quaternion.h: No such file or directory
+   18 | #include <tf2/LinearMath/Quaternion.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+gmake[2]: *** [CMakeFiles/astra_camera.dir/build.make:205: CMakeFiles/astra_camera.dir/src/ros_service.cpp.o] Error 1
+In file included from /home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/ob_camera_info.cpp:17:
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/include/astra_camera/utils.h:18:10: fatal error: tf2/LinearMath/Quaternion.h: No such file or directory
+   18 | #include <tf2/LinearMath/Quaternion.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+gmake[2]: *** [CMakeFiles/astra_camera.dir/build.make:135: CMakeFiles/astra_camera.dir/src/ob_camera_info.cpp.o] Error 1
+In file included from /home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/ob_camera_node.cpp:13:
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/include/astra_camera/ob_camera_node.h:19:10: fatal error: cv_bridge/cv_bridge.h: No such file or directory
+   19 | #include <cv_bridge/cv_bridge.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+gmake[2]: *** [CMakeFiles/astra_camera.dir/build.make:177: CMakeFiles/astra_camera.dir/src/ob_camera_node.cpp.o] Error 1
+In file included from /home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/include/astra_camera/ob_camera_node_factory.h:22,
+                 from /home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/ob_camera_node_factory.cpp:15:
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/include/astra_camera/ob_camera_node.h:19:10: fatal error: cv_bridge/cv_bridge.h: No such file or directory
+   19 | #include <cv_bridge/cv_bridge.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+gmake[2]: *** [CMakeFiles/astra_camera.dir/build.make:163: CMakeFiles/astra_camera.dir/src/ob_camera_node_factory.cpp.o] Error 1
+In file included from /home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/utils.cpp:13:
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/include/astra_camera/utils.h:18:10: fatal error: tf2/LinearMath/Quaternion.h: No such file or directory
+   18 | #include <tf2/LinearMath/Quaternion.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+gmake[2]: *** [CMakeFiles/astra_camera.dir/build.make:219: CMakeFiles/astra_camera.dir/src/utils.cpp.o] Error 1
+In file included from /home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/ros_param_backend.cpp:13:
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/include/astra_camera/ros_param_backend.h:22:7: error: ‘rclcpp::node_interfaces::NodeParametersInterface::OnParametersSetCallbackType’ has not been declared
+   22 |       rclcpp::node_interfaces::NodeParametersInterface::OnParametersSetCallbackType callback);
+      |       ^~~~~~
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/ros_param_backend.cpp:26:6: error: variable or field ‘addOnSetParametersCallback’ declared void
+   26 | void ParametersBackend::addOnSetParametersCallback(
+      |      ^~~~~~~~~~~~~~~~~
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/ros_param_backend.cpp:27:55: error: ‘OnParametersSetCallbackType’ is not a member of ‘rclcpp::node_interfaces::NodeParametersInterface’
+   27 |     rclcpp::node_interfaces::NodeParametersInterface::OnParametersSetCallbackType callback) {
+      |                                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/include/astra_camera/dynamic_params.h:16,
+                 from /home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/dynamic_params.cpp:12:
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/include/astra_camera/ros_param_backend.h:22:7: error: ‘rclcpp::node_interfaces::NodeParametersInterface::OnParametersSetCallbackType’ has not been declared
+   22 |       rclcpp::node_interfaces::NodeParametersInterface::OnParametersSetCallbackType callback);
+      |       ^~~~~~
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/dynamic_params.cpp: In constructor ‘astra_camera::Parameters::Parameters(rclcpp::Node*)’:
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/dynamic_params.cpp:19:7: error: cannot convert ‘astra_camera::Parameters::Parameters(rclcpp::Node*)::<lambda(const std::vector<rclcpp::Parameter>&)>’ to ‘int’
+   19 |       [this](const std::vector<rclcpp::Parameter> &parameters) {
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |       |
+      |       astra_camera::Parameters::Parameters(rclcpp::Node*)::<lambda(const std::vector<rclcpp::Parameter>&)>
+   20 |         for (const auto &parameter : parameters) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   21 |           if (param_functions_.find(parameter.get_name()) != param_functions_.end()) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   22 |             auto functions = param_functions_[parameter.get_name()];
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   23 |             if (functions.empty()) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+   24 |               RCLCPP_WARN_STREAM(logger_, "Parameter " << parameter.get_name()
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   25 |                                                        << " can not be changed in runtime.");
+      |                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   26 |             } else {
+      |             ~~~~~~~~
+   27 |               for (const auto &func : param_functions_[parameter.get_name()]) {
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   28 |                 func(parameter);
+      |                 ~~~~~~~~~~~~~~~~
+   29 |               }
+      |               ~
+   30 |             }
+      |             ~
+   31 |           }
+      |           ~
+   32 |         }
+      |         ~
+   33 |         rcl_interfaces::msg::SetParametersResult result;
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   34 |         result.successful = true;
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~
+   35 |         return result;
+      |         ~~~~~~~~~~~~~~
+   36 |       });
+      |       ~
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/include/astra_camera/ros_param_backend.h:22:85: note: initializing argument 1 of ‘void astra_camera::ParametersBackend::addOnSetParametersCallback(int)’
+   22 |       rclcpp::node_interfaces::NodeParametersInterface::OnParametersSetCallbackType callback);
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~
+gmake[2]: *** [CMakeFiles/astra_camera.dir/build.make:191: CMakeFiles/astra_camera.dir/src/ros_param_backend.cpp.o] Error 1
+gmake[2]: *** [CMakeFiles/astra_camera.dir/build.make:121: CMakeFiles/astra_camera.dir/src/dynamic_params.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:162: CMakeFiles/astra_camera.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2
+---
+Failed   <<< astra_camera [7.82s, exited with code 2]
+
+Summary: 0 packages finished [8.01s]
+  1 package failed: astra_camera
+  1 package had stderr output: astra_camera
+```
