@@ -136,4 +136,28 @@ In file included from /home/ubuntu/ws/src/OrbbecSDK_ROS2/orbbec_camera/src/dynam
 
 This is tricky.  The include path must not be set up correctly.  Let's focus on the `#include <rclcpp/rclcpp.hpp>` error first.  Looking at the `-I` values in the output above, the ROS include paths are wrong as it is looking for this file here: `I/home/ubuntu/ws/src/OrbbecSDK_ROS2/orbbec_camera/rclcpp ` when it is actually here: `/opt/ros/lyrical/include/rclcpp/rclcpp/rclcpp.hpp`
 
-This comes back to the similar problem as experienced in the kobuki platform, `ament_target_dependencies` being deprecated.  Started fixing this but realised the `CMakeLists.txt` file is trying to dotoo much.
+This comes back to the similar problem as experienced in the kobuki platform, `ament_target_dependencies` being deprecated.  Started fixing this but realised the `CMakeLists.txt` file is trying to do too much.
+
+Manually rationalised the CMakeLists.txt file and then fixed until it builds.  There are many little issues with the CMakelists.txt file that need to be resolved, but it is good enough for now.
+
+Started the camera.  It really didn't want to work.
+
+Found out that there was a different repo, <https://github.com/orbbec/ros2_astra_camera>, that I should have been using.  Replaced the other repo with this one and started again.
+
+## Building ros2_astra_camera
+
+Forked repo as <https://github.com/RealRobotics/orbbec-ros2-astra-camera>.
+
+Fixed usual problems with old version of CMake.
+
+Added the following libraries to the Dockerfile so that the build starts:
+
+* libuvc-dev libusb-1.0-0-dev  libusb-1.0-doc  libuvc0  libgoogle-glog-dev
+
+The next problem was:
+
+```bash
+--- stderr: astra_camera
+CMake Error at CMakeLists.txt:123 (ament_target_dependencies):
+  Unknown CMake command "ament_target_dependencies".
+```

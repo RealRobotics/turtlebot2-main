@@ -29,7 +29,8 @@ else
         --env="DISPLAY=$DISPLAY" \
         --env ROS_DOMAIN_ID \
         --device-cgroup-rule='c 13:* rmw' \
-        -v /dev/input:/dev/input \
+        --volume=/dev/input:/dev/input \
+        --volume=/dev/bus/usb:/dev/bus/usb \
         --volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
         --name ${CONTAINER_NAME} \
         --volume ${WORKSPACE_DIR}:/home/ubuntu/ws \

@@ -33,6 +33,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install packages for building and running TurtleBot2 depth camera.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgflags-dev nlohmann-json3-dev  \
+    libuvc-dev libusb-1.0-0-dev  libusb-1.0-doc  libuvc0 \
+    libgoogle-glog-dev \
     ros-${ROS_DISTRO}-image-transport \
     ros-${ROS_DISTRO}-image-transport-plugins \
     ros-${ROS_DISTRO}-compressed-image-transport \
