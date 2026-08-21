@@ -2,7 +2,7 @@
 
 FROM osrf/ros:lyrical-desktop
 
-ENV ROS2_DISTRO=lyrical
+ENV ROS_DISTRO=lyrical
 ENV DEBIAN_FRONTEND=noninteractive
 
 # User ubuntu is created in the base image using GID and UID 1000, but we allow overriding these values with build arguments to match the host user and avoid permission issues when sharing files between the container and the host.
@@ -27,7 +27,7 @@ RUN apt-get update \
 # Install extra ROS2 packages.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         python3-vcstool \
-        ros-${ROS2_DISTRO}-diagnostic-updater \
+        ros-${ROS_DISTRO}-diagnostic-updater \
     && rm -rf /var/lib/apt/lists/*
 
 # Install packages for building and running TurtleBot2 depth camera.
@@ -47,7 +47,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install Gazebo via the ROS metapackage.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        ros-${ROS2_DISTRO}-ros-gz \
+        ros-${ROS_DISTRO}-ros-gz \
     && rm -rf /var/lib/apt/lists/*
 
 # nvidia-container-runtime
@@ -60,16 +60,16 @@ RUN mkdir -p /etc/sudoers.d/ && \
     echo "$UNAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$UNAME && \
     chmod 0440 /etc/sudoers.d/$UNAME
 
-# Source ROS2 setup script for each shell and vcstool auto complete.
-RUN echo ". /opt/ros/jazzy/setup.bash" > /home/$UNAME/.bash_aliases && \
+# Source ROS setup script for each shell and vcstool auto complete.
+RUN echo ". /opt/ros/${ROS_DISTRO}/setup.bash" > /home/$UNAME/.bash_aliases && \
     echo ". /usr/share/vcstool-completion/vcs.bash" >> /home/$UNAME/.bash_aliases
 
 # Use display
 ENV DISPLAY=:1.0
 
 
-# Source ROS2 setup script for each shell and vcstool auto complete.
-RUN echo ". /opt/ros/lyrical/setup.bash" > /home/$UNAME/.bash_aliases && \
+# Source ROS setup script for each shell and vcstool auto complete.
+RUN echo ". /opt/ros/${ROS_DISTRO}/setup.bash" > /home/$UNAME/.bash_aliases && \
     echo ". /usr/share/vcstool-completion/vcs.bash" >> /home/$UNAME/.bash_aliases
 
 # Base image already has user/group ubuntu (typically 1000:1000).

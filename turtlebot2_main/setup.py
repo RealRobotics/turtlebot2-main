@@ -25,7 +25,9 @@ setup(
     maintainer_email="a.j.blight@leeds.ac.uk",
     description="Main repo for the Turtlebot2 robot",
     license="MIT",
-    tests_require=["pytest"],
+    extras_require={
+        'test': ['pytest'],
+    },
     entry_points={
         "console_scripts": [
             # Add yours here...
