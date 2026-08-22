@@ -22,12 +22,18 @@ RUN apt-get update \
         apt-utils \
         gdb \
         less \
+        mesa-utils \
     && rm -rf /var/lib/apt/lists/*
 
 # Install extra ROS2 packages.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         python3-vcstool \
         ros-${ROS_DISTRO}-diagnostic-updater \
+    && rm -rf /var/lib/apt/lists/*
+
+# Qt6 xcb platform plugin (used by rviz2 etc.) requires libxcb-cursor0.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libxcb-cursor0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install packages for building and running the Orbec Astra camera driver.
@@ -69,10 +75,6 @@ RUN mkdir -p /etc/sudoers.d/ && \
 # Source ROS setup script for each shell and vcstool auto complete.
 RUN echo ". /opt/ros/${ROS_DISTRO}/setup.bash" > /home/$UNAME/.bash_aliases && \
     echo ". /usr/share/vcstool-completion/vcs.bash" >> /home/$UNAME/.bash_aliases
-
-# Use display
-ENV DISPLAY=:1.0
-
 
 # Source ROS setup script for each shell and vcstool auto complete.
 RUN echo ". /opt/ros/${ROS_DISTRO}/setup.bash" > /home/$UNAME/.bash_aliases && \
