@@ -300,3 +300,185 @@ Summary: 0 packages finished [8.01s]
   1 package failed: astra_camera
   1 package had stderr output: astra_camera
 ```
+
+Built with more debugging options enabled to see what paths the `CMakeLists.txt` file is setting up.
+
+```bash
+colcon build --packages-select=astra_camera --event-handlers=console_cohesion+ --cmake-args -DCMAKE_VERBOSE_MAKEFILE=ON --executor sequential
+```
+
+Reformatted the build output for one of files so I can see the include paths.
+
+```bash
+Building CXX object CMakeFiles/astra_camera.dir/src/ob_camera_node.cpp.o
+/usr/bin/c++ -DDEFAULT_RMW_IMPLEMENTATION=rmw_fastrtps_cpp -DFASTCDR_DYN_LINK -DROS_PACKAGE_NAME=\"astra_camera\" -DTINYXML2_DEBUG -DTINYXML2_IMPORT -D_FILE_OFFSET_BITS=64 -Dastra_camera_EXPORTS
+-I/home/ubuntu/ws/build/astra_camera/include
+-I/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/include
+-I/usr/include/libusb-1.0
+-I/opt/ros/lyrical/include
+-I/home/ubuntu/ws/install/astra_camera_msgs/include/astra_camera_msgs
+-I/opt/ros/lyrical/include/camera_calibration_parsers
+-I/opt/ros/lyrical/include/camera_info_manager
+-I/opt/ros/lyrical/include/cv_bridge
+-I/opt/ros/lyrical/include/image_transport
+-I/opt/ros/lyrical/include/rclcpp_components
+-I/opt/ros/lyrical/include/image_publisher
+-I/opt/ros/lyrical/include/pluginlib
+-I/opt/ros/lyrical/include/std_srvs
+-isystem /usr/include/opencv4
+-isystem /opt/ros/lyrical/include/sensor_msgs
+-isystem /opt/ros/lyrical/include/std_msgs
+-isystem /opt/ros/lyrical/include/service_msgs
+-isystem /opt/ros/lyrical/include/rosidl_runtime_c
+-isystem /opt/ros/lyrical/include/rosidl_typesupport_interface
+-isystem /opt/ros/lyrical/include/rcutils
+-isystem /opt/ros/lyrical/include/rosidl_runtime_cpp
+-isystem /opt/ros/lyrical/include/rosidl_typesupport_fastrtps_c
+-isystem /opt/ros/lyrical/include/rosidl_typesupport_fastrtps_cpp
+-isystem /opt/ros/lyrical/include/rosidl_typesupport_c
+-isystem /opt/ros/lyrical/include/rmw
+-isystem /opt/ros/lyrical/include/rosidl_typesupport_cpp
+-isystem /opt/ros/lyrical/include/builtin_interfaces
+-isystem /opt/ros/lyrical/include/rosidl_buffer
+-isystem /opt/ros/lyrical/include/rcpputils
+-isystem /opt/ros/lyrical/include/rosidl_typesupport_introspection_c
+-isystem /opt/ros/lyrical/include/rosidl_typesupport_introspection_cpp
+-isystem /opt/ros/lyrical/include/ament_index_cpp
+-isystem /opt/ros/lyrical/include/rclcpp
+-isystem /opt/ros/lyrical/include/rclcpp_lifecycle
+-isystem /opt/ros/lyrical/include/rcl_interfaces
+-isystem /opt/ros/lyrical/include/message_filters
+-isystem /opt/ros/lyrical/include/libstatistics_collector
+-isystem /opt/ros/lyrical/include/rcl
+-isystem /opt/ros/lyrical/include/rcl_yaml_param_parser
+-isystem /opt/ros/lyrical/include/rosgraph_msgs
+-isystem /opt/ros/lyrical/include/rosidl_dynamic_typesupport
+-isystem /opt/ros/lyrical/include/statistics_msgs
+-isystem /opt/ros/lyrical/include/tracetools
+-isystem /opt/ros/lyrical/include/class_loader
+-isystem /opt/ros/lyrical/include/composition_interfaces
+-isystem /opt/ros/lyrical/include/geometry_msgs
+-isystem /opt/ros/lyrical/include/tf2
+-isystem /opt/ros/lyrical/include/action_msgs
+-isystem /opt/ros/lyrical/include/tf2_msgs
+-isystem /opt/ros/lyrical/include/tf2_ros
+-isystem /opt/ros/lyrical/include/rclcpp_action
+-isystem /usr/include/eigen3
+-isystem /opt/ros/lyrical/include/rosidl_buffer_backend
+-isystem /opt/ros/lyrical/includefastcdr
+-isystem /opt/ros/lyrical/include/rcl_logging_interface
+-isystem /opt/ros/lyrical/include/type_description_interfaces
+-isystem /opt/ros/lyrical/include/lifecycle_msgs
+-isystem /opt/ros/lyrical/include/rcl_lifecycle
+-isystem /opt/ros/lyrical/include/unique_identifier_msgs
+-isystem /opt/ros/lyrical/include/rcl_action
+-fPIC -O3 -g -fPIC -g -std=gnu++20 -fPIC -Wall -Wextra -Wpedantic -MD -MT CMakeFiles/astra_camera.dir/src/ob_camera_node.cpp.o -MF CMakeFiles/astra_camera.dir/src/ob_camera_node.cpp.o.d -o CMakeFiles/astra_camera.dir/src/ob_camera_node.cpp.o -c /home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/ob_camera_node.cpp
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/uvc_camera_driver.cpp:15:10: fatal error: cv_bridge/cv_bridge.h: No such file or directory
+   15 | #include <cv_bridge/cv_bridge.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+```
+
+Full list of missing header files.
+
+```cpp
+#include <cv_bridge/cv_bridge.h>
+#include <image_geometry/pinhole_camera_model.h>
+#include <message_filters/subscriber.h>
+#include <tf2/LinearMath/Quaternion.h>
+```
+
+Searched for the all of the above using `find` and all not found.  Checking for missing packages.  Installed the packages in the `dockerfile`.
+
+```docker
+    ros-${ROS_DISTRO}-cv-bridge \
+    ros-${ROS_DISTRO}-image-geometry \
+    ros-${ROS_DISTRO}-message-filters \
+    ros-${ROS_DISTRO}-tf2 \
+```
+
+Header names have been also been changed from `.h` to `.hpp` in the packages.  Changed in the code.
+
+Only problem remaining is:
+
+```bash
+--- stderr: astra_camera
+/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/point_cloud_proc/point_cloud_xyzrgb.cpp:42:10: fatal error: image_geometry/pinhole_camera_model.hpp: No such file or directory
+   42 | #include <image_geometry/pinhole_camera_model.hpp>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+No idea why as the file is present now.
+
+```bash
+find / -name "pinhole_camera_model.hpp"
+/opt/ros/lyrical/include/image_geometry/image_geometry/pinhole_camera_model.hpp
+```
+
+Checking paths in build files again.
+
+```bash
+/usr/bin/c++ -DDEFAULT_RMW_IMPLEMENTATION=rmw_fastrtps_cpp -DFASTCDR_DYN_LINK -DROS_PACKAGE_NAME=\"astra_camera\" -DTINYXML2_DEBUG -DTINYXML2_IMPORT -D_FILE_OFFSET_BITS=64 -Dastra_camera_EXPORTS
+-I/home/ubuntu/ws/build/astra_camera/include
+-I/home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/include
+-I/usr/include/libusb-1.0
+-I/opt/ros/lyrical/include
+-I/home/ubuntu/ws/install/astra_camera_msgs/include/astra_camera_msgs
+-I/opt/ros/lyrical/include/camera_calibration_parsers
+-I/opt/ros/lyrical/include/camera_info_manager
+-I/opt/ros/lyrical/include/cv_bridge
+-I/opt/ros/lyrical/include/image_transport
+-I/opt/ros/lyrical/include/rclcpp_components
+-I/opt/ros/lyrical/include/image_publisher
+-I/opt/ros/lyrical/include/pluginlib
+-I/opt/ros/lyrical/include/std_srvs
+-isystem /usr/include/opencv4
+-isystem /opt/ros/lyrical/include/sensor_msgs
+-isystem /opt/ros/lyrical/include/std_msgs
+-isystem /opt/ros/lyrical/include/service_msgs
+-isystem /opt/ros/lyrical/include/rosidl_runtime_c
+-isystem /opt/ros/lyrical/include/rosidl_typesupport_interface
+-isystem /opt/ros/lyrical/include/rcutils
+-isystem /opt/ros/lyrical/include/rosidl_runtime_cpp
+-isystem /opt/ros/lyrical/include/rosidl_typesupport_fastrtps_c
+-isystem /opt/ros/lyrical/include/rosidl_typesupport_fastrtps_cpp
+-isystem /opt/ros/lyrical/include/rosidl_typesupport_c
+-isystem /opt/ros/lyrical/include/rmw
+-isystem /opt/ros/lyrical/include/rosidl_typesupport_cpp
+-isystem /opt/ros/lyrical/include/builtin_interfaces
+-isystem /opt/ros/lyrical/include/rosidl_buffer
+-isystem /opt/ros/lyrical/include/rcpputils
+-isystem /opt/ros/lyrical/include/rosidl_typesupport_introspection_c
+-isystem /opt/ros/lyrical/include/rosidl_typesupport_introspection_cpp
+-isystem /opt/ros/lyrical/include/ament_index_cpp
+-isystem /opt/ros/lyrical/include/rclcpp
+-isystem /opt/ros/lyrical/include/rclcpp_lifecycle
+-isystem /opt/ros/lyrical/include/rcl_interfaces
+-isystem /opt/ros/lyrical/include/message_filters
+-isystem /opt/ros/lyrical/include/libstatistics_collector
+-isystem /opt/ros/lyrical/include/rcl
+-isystem /opt/ros/lyrical/include/rcl_yaml_param_parser
+-isystem /opt/ros/lyrical/include/rosgraph_msgs
+-isystem /opt/ros/lyrical/include/rosidl_dynamic_typesupport
+-isystem /opt/ros/lyrical/include/statistics_msgs
+-isystem /opt/ros/lyrical/include/tracetools
+-isystem /opt/ros/lyrical/include/class_loader
+-isystem /opt/ros/lyrical/include/composition_interfaces
+-isystem /opt/ros/lyrical/include/geometry_msgs
+-isystem /opt/ros/lyrical/include/tf2
+-isystem /opt/ros/lyrical/include/action_msgs
+-isystem /opt/ros/lyrical/include/tf2_msgs
+-isystem /opt/ros/lyrical/include/tf2_ros
+-isystem /opt/ros/lyrical/include/rclcpp_action
+-isystem /usr/include/eigen3
+-isystem /opt/ros/lyrical/include/rosidl_buffer_backend
+-isystem /opt/ros/lyrical/includefastcdr
+-isystem /opt/ros/lyrical/include/rcl_logging_interface
+-isystem /opt/ros/lyrical/include/type_description_interfaces
+-isystem /opt/ros/lyrical/include/lifecycle_msgs
+-isystem /opt/ros/lyrical/include/rcl_lifecycle
+-isystem /opt/ros/lyrical/include/unique_identifier_msgs
+-isystem /opt/ros/lyrical/include/rcl_action -fPIC -O3 -g -fPIC -g -std=gnu++20 -fPIC -Wall -Wextra -Wpedantic -MD -MT CMakeFiles/astra_camera.dir/src/point_cloud_proc/point_cloud_xyzrgb.cpp.o -MF CMakeFiles/astra_camera.dir/src/point_cloud_proc/point_cloud_xyzrgb.cpp.o.d -o CMakeFiles/astra_camera.dir/src/point_cloud_proc/point_cloud_xyzrgb.cpp.o -c /home/ubuntu/ws/src/orbbec-ros2-astra-camera/astra_camera/src/point_cloud_proc/point_cloud_xyzrgb.cpp
+```
+
+Interesting.  The `image_geomtetry` package is missing from the list of includes.  The `cv_bridge` includes are present but only in the `-I` includes whereas most other ROS include paths are in the `isystem` section.  Let's see how to fix this in the `CMakeLists.txt` file.
