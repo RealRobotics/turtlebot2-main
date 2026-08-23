@@ -7,25 +7,8 @@ docker_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &>/dev/null && pwd )"
 
 mkdir -p ${WORKSPACE_DIR}
 
-# Use a nested Xephyr X11 server rather than XWayland directly: Ogre's legacy GLX
-# window-embedding code (used by rviz2/Gazebo) races against XWayland's window
-# realization and reliably fails with "Invalid parentWindowHandle (wrong server or
-# screen)". Xephyr is a real, synchronous X11 server so it doesn't have this race.
-. ${docker_dir}/xephyr.bash
-host_display="${XEPHYR_DISPLAY}"
-host_xauthority="${XEPHYR_AUTH_FILE}"
-
-# Use the NVidia GPU (and its GLX/EGL driver, avoiding Mesa/XWayland DRI3 issues) when available.
-gpu_args=()
-if command -v nvidia-smi &> /dev/null && nvidia-smi &> /dev/null
-then
-    # On hybrid-graphics (PRIME) laptops, these force render offload to the NVidia GPU.
-    gpu_args+=(
-        --gpus=all
-        --env="__NV_PRIME_RENDER_OFFLOAD=1"
-        --env="__GLX_VENDOR_LIBRARY_NAME=nvidia"
-    )
-fi
+# Authorize the local container to access the display server.
+command -v xhost >/dev/null 2>&1 && xhost +SI:localuser:$(id -un) >/dev/null
 
 docker container inspect ${CONTAINER_NAME} &> /dev/null
 if [ $? == 0 ]
@@ -42,26 +25,44 @@ then
     fi
 else
     # Container does not exist.
-    docker container run \
+    mkdir -p ${WORKSPACE_DIR}
+
+    # Use host's XDG_RUNTIME_DIR for Wayland socket, or fall back to /tmp
+    HOST_XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/tmp}
+    WAYLAND_SOCKET_PATH="${HOST_XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}"
+
+    # Build the docker run command
+    DOCKER_RUN_CMD="docker container run \
         --detach \
         --tty \
         --net=host \
-        --env="DISPLAY=$host_display" \
-        --env ROS_DOMAIN_ID \
-        "${gpu_args[@]}" \
+        --ipc=host \
+        --volume ${WORKSPACE_DIR}:${CONTAINER_HOME}/ws \
+        --gpus all \
+        -e DISPLAY=$DISPLAY \
+        -v /tmp/.X11-unix:/tmp/.X11-unix:rw"
+
+        # Mods for Orbec AStra camera.
         --device-cgroup-rule='c 13:* rmw' \
         --device-cgroup-rule='c 189:* rmw' \
         --device=/dev/dri:/dev/dri \
         --group-add="$(getent group video | cut -d: -f3)" \
         --group-add="$(getent group render | cut -d: -f3)" \
-        --volume=/dev/input:/dev/input \
-        --volume=/dev/bus/usb:/dev/bus/usb \
-        --volume=/tmp/.X11-unix:/tmp/.X11-unix:rw \
-        --volume="$host_xauthority:/home/ubuntu/.Xauthority:rw" \
-        --env="XAUTHORITY=/home/ubuntu/.Xauthority" \
-        --name ${CONTAINER_NAME} \
-        --volume ${WORKSPACE_DIR}:/home/ubuntu/ws \
-        ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null
+
+    # Only mount Wayland socket if it exists
+    if [ -S "$WAYLAND_SOCKET_PATH" ]; then
+        DOCKER_RUN_CMD="$DOCKER_RUN_CMD \
+        -v $WAYLAND_SOCKET_PATH:/tmp/wayland-0 \
+        -e WAYLAND_DISPLAY=wayland-0 \
+        -e XDG_RUNTIME_DIR=/tmp"
+    fi
+
+    DOCKER_RUN_CMD="$DOCKER_RUN_CMD \
+        -e __NV_PRIME_RENDER_OFFLOAD=1 \
+        -e __GLX_VENDOR_LIBRARY_NAME=nvidia \
+        ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null"
+
+    eval "$DOCKER_RUN_CMD"
     if [ $? == 0 ]
     then
         echo "Container '${CONTAINER_NAME}' running."
