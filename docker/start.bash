@@ -37,17 +37,19 @@ else
         --tty \
         --net=host \
         --ipc=host \
+        --name ${CONTAINER_NAME} \
         --volume ${WORKSPACE_DIR}:${CONTAINER_HOME}/ws \
         --gpus all \
         -e DISPLAY=$DISPLAY \
         -v /tmp/.X11-unix:/tmp/.X11-unix:rw"
 
-        # Mods for Orbec AStra camera.
+    # Mods for Orbec AStra camera.
+    DOCKER_RUN_CMD="$DOCKER_RUN_CMD \
         --device-cgroup-rule='c 13:* rmw' \
         --device-cgroup-rule='c 189:* rmw' \
         --device=/dev/dri:/dev/dri \
-        --group-add="$(getent group video | cut -d: -f3)" \
-        --group-add="$(getent group render | cut -d: -f3)" \
+        --group-add='$(getent group video | cut -d: -f3)' \
+        --group-add='$(getent group render | cut -d: -f3)'"
 
     # Only mount Wayland socket if it exists
     if [ -S "$WAYLAND_SOCKET_PATH" ]; then
