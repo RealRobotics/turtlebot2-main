@@ -49,7 +49,9 @@ else
         --device-cgroup-rule='c 189:* rmw' \
         --device=/dev/dri:/dev/dri \
         --group-add='$(getent group video | cut -d: -f3)' \
-        --group-add='$(getent group render | cut -d: -f3)'"
+        --group-add='$(getent group render | cut -d: -f3)' \
+        --volume=/dev/input:/dev/input \
+        --volume=/dev/bus/usb:/dev/bus/usb "
 
     # Only mount Wayland socket if it exists
     if [ -S "$WAYLAND_SOCKET_PATH" ]; then

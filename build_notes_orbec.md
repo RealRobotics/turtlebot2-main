@@ -516,3 +516,11 @@ The fix for this and some related fixes was all that was needed to get the code 
 After this the node started properly but could not find the camera.  A change to the `docker/start.bash` fiel fix this.
 
 Now we need to get `rviz2` to work in the docker.
+
+Changed to use Wayland changes from ros-docker-scripts.  Much neater.  `RQt` starts OK but does not get any topics. `RViz2` fails to start, so more work to be done.  Tested with the following command:
+
+```bash
+ ros2 run image_tools showimage --remap /image:=/camera/color/image_raw
+```
+
+And it shows a lovely image of my hands and keyboard!  It works.  `RQt` and `RViz2` are separate problems.
