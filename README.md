@@ -19,23 +19,11 @@ These docs show how the two main hardware components were built.
 * [Kobuki platform build notes](build_notes_kobuki.md)
 * [Orbbec Astra camera](build_notes_orbbec.md)
 
+The code was originally built on a fast workstation inside a docker image.  [Instructions here.](docker/README.md)
 
+A laptop was intended to be used to control the TurtleBot2, so that is what I used first.  The installation notes can be found [here](pc_installation.md) that includes building the ROS Nav2 stack. 
 
-Rebuild docker after sorting out ROS_DISTRO stuff.
-
-Orbbec camera and random walker build issues.
-
-
-## Running the code
-
-TODO
-
-## Documents
-
-* [Workspace set up](setup.md)
-* [Build instructions](build.md)
-* [Running the TurtleBot2](running.md)
-* [Notes on building the code](build_notes.md)
+The next job was to get the robot to run.  This process is documented [here](running_slam.md).
 
 ## Acknowledgments
 
