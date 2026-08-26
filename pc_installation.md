@@ -158,11 +158,16 @@ ros-lyrical-nav2-voxel-grid
 
 This was because ROS Lyrical is missing the Nav2 meta package that installs the fullstack and more importantly it is also missing the `nav2_bringup` package.  This meant that I then had to clone the [`nav2` repo](https://github.com/ros-navigation/navigation2) and build the entire stack.  This has taken several hours. 
 
-Also had to install this package:
+Also had to install these packages:
 
 ```bash
-sudo apt install ros-lyrical-ament-cmake-google-benchmark
+"sudo apt install ros-lyrical-ament-cmake-google-benchmark \
+    ros-lyrical-ompl* \
+    ros-lyrical-robot-localization \
+    sudo apt install ros-lyrical-nav2-minimal-tb3-sim"
 ```
+
+The build took many hours to complete. 
 
 ## Performance issues
 

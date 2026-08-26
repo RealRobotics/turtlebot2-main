@@ -10,11 +10,16 @@ Tested using
 
 ## Objective
 
-To run the Turtlebot2 using a Raspberry Pi4.  The robot should then be able to map the room and navigate between two set points avoiding obstacles and replanning as required.
+To run the Turtlebot2 using a Raspberry Pi4 or an old laptop.  The robot should then be able to map the room and navigate between two set points avoiding obstacles and replanning as required.
 
 ## Setup and building
 
-TO DO
+These docs show how the two main hardware components were built.
+
+* [Kobuki platform build notes](build_notes_kobuki.md)
+* [Orbbec Astra camera](build_notes_orbbec.md)
+
+
 
 Rebuild docker after sorting out ROS_DISTRO stuff.
 
