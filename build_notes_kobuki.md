@@ -998,6 +998,124 @@ add_definitions(-DEIGEN_DONT_ALIGN)
 
 Not an ideal solution as the code should be fixed properly, but it is not my code so this will do for now.
 
-## Running the code
+## Testing the code
 
-TODO
+To test the Kobuki base, start using this command:
+
+```bash
+$ ros2 launch turtlebot2_main turtlebot2-base.launch.py 
+```
+
+When the Kobuki base connects to this ROS program, the base plays and ascending tune.  When disconnected, there a a short pause and then the base plays a descending tune. 
+
+If you don't hea r the tone, then check the output for something like this:
+
+```bash
+$ ros2 launch turtlebot2_main turtlebot2-base.launch.py 
+[INFO] [launch]: All log files can be found below /home/andy/.ros/log/
+...
+[kobuki_ros_node-1] terminate called after throwing an instance of 'ecl::StandardException'
+[kobuki_ros_node-1]   what():  
+[kobuki_ros_node-1] Location : /home/andy/ws/src/kobuki_core/src/driver/kobuki.cpp:147 
+[kobuki_ros_node-1]          : /home/andy/ws/src/ecl_core/ecl_devices/src/lib/serial_pos.cpp:117 
+[kobuki_ros_node-1] Flag     : The caller does not have the required permissions.
+[kobuki_ros_node-1] Detail   : Could not open /dev/ttyUSB0. Access permission was denied.
+```
+
+To fix this, enter : 
+
+```bash
+sudo usermod -a -G dialout $USER
+```
+
+and then log out and in again so this change takes effect.
+
+The following topics and services should start up (no actions run):
+
+```bash
+$ ros2 topic list
+/commands/controller_info
+/commands/digital_output
+/commands/external_power
+/commands/led1
+/commands/led2
+/commands/motor_power
+/commands/reset_odometry
+/commands/sound
+/commands/velocity
+/controller_info
+/debug/raw_control_command
+/debug/raw_data_command
+/debug/raw_data_stream
+/diagnostics
+/events/bumper
+/events/button
+/events/cliff
+/events/digital_input
+/events/power_system
+/events/robot_state
+/events/wheel_drop
+/joint_states
+/odom
+/parameter_events
+/rosout
+/sensors/battery_state
+/sensors/core
+/sensors/dock_ir
+/sensors/imu_data
+/sensors/imu_data_raw
+/tf
+/version_info
+$ ros2 service list
+/kobuki/describe_parameters
+/kobuki/get_parameter_types
+/kobuki/get_parameters
+/kobuki/get_type_description
+/kobuki/list_parameters
+/kobuki/set_parameters
+/kobuki/set_parameters_atomically
+```
+
+### Testing publishers
+
+The following commands were used to check the topic publishers were working when on the desktop:
+
+```bash
+# Software version number of the Kobuki base plus other info.
+ros2 topic echo /version_info
+# Lots of info on this.
+ros2 topic echo /diagnostics
+# One message per button event (press or release)
+ros2 topic echo /events/button
+# One message for each of the three bumper switch state changes. 
+# 0 left, 1 centre, 2 right.  
+# Often more than one switch is pressed when the plastic bumper is pressed.
+ros2 topic echo /events/bumper
+# 3 downward facing IR range sensors on the front.
+# 0 left, 1 centre, 2 right.  
+# Returns sensor number, state (0 no cliff, 1 cliff) and distance in mm.
+ros2 topic echo /events/cliff
+ros2 topic echo /sensors/imu_data
+ros2 topic echo /odom
+# This works nicely, 15.3V = 65%.  
+ros2 topic echo /sensors/battery_state
+#  Has most of what you actually need to run this base.
+ros2 topic echo /sensors/core 
+# I don't have one of these so always 0 values.
+ros2 topic echo /sensors/dock_ir  
+# Seems about right. 
+ros2 topic echo /joint_states
+```
+
+Commands tested were:
+
+```bash
+# 0 off, 1 green, 2 orange, 3 red.
+ros2 topic pub -1 /commands/led1 kobuki_ros_interfaces/msg/Led "{'value':1}"
+ros2 topic pub -1 /commands/led2 kobuki_ros_interfaces/msg/Led "{'value':3}"
+# Many different sounds, 0 - 6.
+ros2 topic pub -1 /commands/sound kobuki_ros_interfaces/msg/Sound "{'value':2}"
+```
+
+Got bored with testing at this point.  Everything works so far, so fix any bugs if I find them. 
+

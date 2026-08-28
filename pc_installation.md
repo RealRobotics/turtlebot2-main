@@ -51,7 +51,7 @@ Using `/tmp` allows the installation to complete successfully.  Doing this from 
 
 ### Firefox
 
-I installeed Firefox using these commands:
+I installed Firefox using these commands:
 
 ```bash
 sudo apt update
@@ -120,7 +120,9 @@ Added this to my personal account on GitHub.
 
 ### Building the Kobuki and Astra camera code
 
-I copied the `src` tree from my main laptop where the code already built and extracted it to the `~/ws/src` directory.  Then I tried to build it.  The following extra packages needed to be installed.
+I copied the `src` tree from my main laptop where the code already built and extracted it to the `~/ws/src` directory.  
+
+Then I tried to build it.  The following extra packages needed to be installed.
 
 ```bash
 "sudo apt install -y libuvc-dev \
@@ -129,7 +131,73 @@ I copied the `src` tree from my main laptop where the code already built and ext
     ros-lyrical-image-publisher"
 ```
 
-This build completed.
+This build completed.  When testing the Kobuki base, I got the following exception:
+
+```bash
+$ ros2 launch turtlebot2_main turtlebot2-base.launch.py 
+[INFO] [launch]: All log files can be found below /home/andy/.ros/log/
+...
+[kobuki_ros_node-1] terminate called after throwing an instance of 'ecl::StandardException'
+[kobuki_ros_node-1]   what():  
+[kobuki_ros_node-1] Location : /home/andy/ws/src/kobuki_core/src/driver/kobuki.cpp:147 
+[kobuki_ros_node-1]          : /home/andy/ws/src/ecl_core/ecl_devices/src/lib/serial_pos.cpp:117 
+[kobuki_ros_node-1] Flag     : The caller does not have the required permissions.
+[kobuki_ros_node-1] Detail   : Could not open /dev/ttyUSB0. Access permission was denied.
+```
+
+This was fixed using: 
+
+```bash
+sudo usermod -a -G dialout $USER
+```
+
+and then logging out and in again so this change took effect.
+
+When run again, the topics and services were running (no actions run):
+
+```bash
+$ ros2 topic list
+/commands/controller_info
+/commands/digital_output
+/commands/external_power
+/commands/led1
+/commands/led2
+/commands/motor_power
+/commands/reset_odometry
+/commands/sound
+/commands/velocity
+/controller_info
+/debug/raw_control_command
+/debug/raw_data_command
+/debug/raw_data_stream
+/diagnostics
+/events/bumper
+/events/button
+/events/cliff
+/events/digital_input
+/events/power_system
+/events/robot_state
+/events/wheel_drop
+/joint_states
+/odom
+/parameter_events
+/rosout
+/sensors/battery_state
+/sensors/core
+/sensors/dock_ir
+/sensors/imu_data
+/sensors/imu_data_raw
+/tf
+/version_info
+$ ros2 service list
+/kobuki/describe_parameters
+/kobuki/get_parameter_types
+/kobuki/get_parameters
+/kobuki/get_type_description
+/kobuki/list_parameters
+/kobuki/set_parameters
+/kobuki/set_parameters_atomically
+```
 
 ### Building the NAV2 code
 
