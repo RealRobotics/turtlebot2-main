@@ -33,7 +33,7 @@ def generate_launch_description():
         # astra.launch.xml file.
         parameters=[{
             "camera_name": "camera",
-            "enable_color": True,
+            "enable_color": False,
             "enable_depth": True,
             "enable_point_cloud": True,
             "enable_colored_point_cloud": False,
