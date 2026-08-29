@@ -53,6 +53,14 @@ else
         --volume=/dev/input:/dev/input \
         --volume=/dev/bus/usb:/dev/bus/usb "
 
+    # Bind-mount /dev (instead of a specific device) so the Kobuki's /dev/ttyUSB0 becomes
+    # visible even if it is plugged in after the container has started, and allow the
+    # USB-serial device class via cgroup rule plus the group that owns ttyUSB* on the host.
+    DOCKER_RUN_CMD="$DOCKER_RUN_CMD \
+        --volume=/dev:/dev \
+        --device-cgroup-rule='c 188:* rmw' \
+        --group-add='$(getent group dialout | cut -d: -f3)'"
+
     # Only mount Wayland socket if it exists
     if [ -S "$WAYLAND_SOCKET_PATH" ]; then
         DOCKER_RUN_CMD="$DOCKER_RUN_CMD \

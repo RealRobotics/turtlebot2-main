@@ -4,21 +4,20 @@
 
 * Test Astra camera.  Done.
 * Test Kobuki base. Done.
-* Get Kobuki base driving around the floor using keyboard tele-op. 
-    * Not working - see below.
-* Run SLAM. 
+* Get Kobuki base driving around the floor using keyboard tele-op.
+    * Not working - Fixed.
+* Run SLAM.
     * Break this down into smaller tasks?
 
 
 ## ROS things to fix
 
-* Nav2 
-    * No `ros-lyrical-navigate2` package.
-    * No `ros-lyrical-nav2-bringup` package.
+* Nav2
+  * No `ros-lyrical-navigate2` package.
+  * No `ros-lyrical-nav2-bringup` package.
 * RQt really sucks on the old laptop.  Uses 110% CPU  (from 400%) and barely responds.
 
 ## Kobuki
 
-* keyop does not have launch file.  Should be able to launch using ROS 1 command `roslaunch kobuki_keyop robot_core.launch` but there is no launch file for this ROS2 branch. 
-    * Added launch file. The code it uses doesn't work. 
-
+* keyop does not have launch file. ROS2 does not allow keyboard input to be caught by the nodes started in a launch file.
+  Fixed published topics to match those used by the rest of the ROS interface.
