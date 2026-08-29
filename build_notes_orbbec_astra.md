@@ -524,3 +524,7 @@ Changed to use Wayland changes from ros-docker-scripts.  Much neater.  `RQt` sta
 ```
 
 And it shows a lovely image of my hands and keyboard!  It works.  `RQt` and `RViz2` are separate problems.
+
+## Testing 
+
+Created the `astra_camera.launch.py` file and tested the ORBBEC Astra camera.  Uses lots of CPU, about 110% to do the depth and colour camera feeds.  Just using the depth halves this.  The image shown in `rqt` is interesting.  My hand has seven or eight fingers depending on where I hold my hand!
