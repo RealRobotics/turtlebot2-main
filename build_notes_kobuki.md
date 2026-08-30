@@ -1003,26 +1003,26 @@ Not an ideal solution as the code should be fixed properly, but it is not my cod
 To test the Kobuki base, start using this command:
 
 ```bash
-$ ros2 launch turtlebot2_main turtlebot2-base.launch.py 
+$ ros2 launch turtlebot2_main turtlebot2-base.launch.py
 ```
 
-When the Kobuki base connects to this ROS program, the base plays and ascending tune.  When disconnected, there a a short pause and then the base plays a descending tune. 
+When the Kobuki base connects to this ROS program, the base plays and ascending tune.  When disconnected, there a a short pause and then the base plays a descending tune.
 
 If you don't hea r the tone, then check the output for something like this:
 
 ```bash
-$ ros2 launch turtlebot2_main turtlebot2-base.launch.py 
+$ ros2 launch turtlebot2_main turtlebot2-base.launch.py
 [INFO] [launch]: All log files can be found below /home/andy/.ros/log/
 ...
 [kobuki_ros_node-1] terminate called after throwing an instance of 'ecl::StandardException'
-[kobuki_ros_node-1]   what():  
-[kobuki_ros_node-1] Location : /home/andy/ws/src/kobuki_core/src/driver/kobuki.cpp:147 
-[kobuki_ros_node-1]          : /home/andy/ws/src/ecl_core/ecl_devices/src/lib/serial_pos.cpp:117 
+[kobuki_ros_node-1]   what():
+[kobuki_ros_node-1] Location : /home/andy/ws/src/kobuki_core/src/driver/kobuki.cpp:147
+[kobuki_ros_node-1]          : /home/andy/ws/src/ecl_core/ecl_devices/src/lib/serial_pos.cpp:117
 [kobuki_ros_node-1] Flag     : The caller does not have the required permissions.
 [kobuki_ros_node-1] Detail   : Could not open /dev/ttyUSB0. Access permission was denied.
 ```
 
-To fix this, enter : 
+To fix this, enter :
 
 ```bash
 sudo usermod -a -G dialout $USER
@@ -1087,23 +1087,23 @@ ros2 topic echo /version_info
 ros2 topic echo /diagnostics
 # One message per button event (press or release)
 ros2 topic echo /events/button
-# One message for each of the three bumper switch state changes. 
-# 0 left, 1 centre, 2 right.  
+# One message for each of the three bumper switch state changes.
+# 0 left, 1 centre, 2 right.
 # Often more than one switch is pressed when the plastic bumper is pressed.
 ros2 topic echo /events/bumper
 # 3 downward facing IR range sensors on the front.
-# 0 left, 1 centre, 2 right.  
+# 0 left, 1 centre, 2 right.
 # Returns sensor number, state (0 no cliff, 1 cliff) and distance in mm.
 ros2 topic echo /events/cliff
 ros2 topic echo /sensors/imu_data
 ros2 topic echo /odom
-# This works nicely, 15.3V = 65%.  
+# This works nicely, 15.3V = 65%.
 ros2 topic echo /sensors/battery_state
 #  Has most of what you actually need to run this base.
-ros2 topic echo /sensors/core 
+ros2 topic echo /sensors/core
 # I don't have one of these so always 0 values.
-ros2 topic echo /sensors/dock_ir  
-# Seems about right. 
+ros2 topic echo /sensors/dock_ir
+# Seems about right.
 ros2 topic echo /joint_states
 ```
 
@@ -1117,5 +1117,12 @@ ros2 topic pub -1 /commands/led2 kobuki_ros_interfaces/msg/Led "{'value':3}"
 ros2 topic pub -1 /commands/sound kobuki_ros_interfaces/msg/Sound "{'value':2}"
 ```
 
-Got bored with testing at this point.  Everything works so far, so fix any bugs if I find them. 
+Got bored with testing at this point.  Everything works so far, so fix any bugs if I find them.
 
+### Kobuki Key Operation
+
+```sh
+ros2 run kobuki_keyop kobuki_keyop_node
+```
+
+Instructions on use are shown after start up.
