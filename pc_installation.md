@@ -10,7 +10,7 @@ To control the TurtleBot 2, I decided to use an old laptop, a ThinkPad T410.  Th
 
 ## Installation
 
-Installed Kubuntu 26.04LTS __minimal__ installation with the usual defaults: full HDD being used for the OS, British English locale. 
+Installed Kubuntu 26.04LTS __minimal__ installation with the usual defaults: full HDD being used for the OS, British English locale.
 
 Installed my Bash scripts:
 
@@ -26,12 +26,12 @@ Then setup my Git username and email. Disabled auto updates of everything in `/e
 
 ### Swapfile
 
-Increased the swapfile to 8GB to match the RAM size. 
+Increased the swapfile to 8GB to match the RAM size.
 
 ```bash
 sudo swapon --show
-sudo swapoff /swapfile 
-sudo rm /swapfile 
+sudo swapoff /swapfile
+sudo rm /swapfile
 sudo fallocate -l 8G /swapfile
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
@@ -44,7 +44,7 @@ sudo swapon --show
 ```bash
 cd /tmp
 mv ~/Downloads/code_1.134.0-1787078834_amd64.deb .
-sudo apt install ./code_1.134.0-1787078834_amd64.deb 
+sudo apt install ./code_1.134.0-1787078834_amd64.deb
 ```
 
 Using `/tmp` allows the installation to complete successfully.  Doing this from your home directory or below causes a sandbox error.
@@ -68,7 +68,7 @@ firefox
 which firefox
 ls snap/firefox/
 ls snap/firefox/current
-firefox 
+firefox
 ```
 
 I then had to manually install the application shortcut and icon for Firefox.
@@ -99,7 +99,7 @@ source ~/ws/install/setup.bash
 
 As this PC is only ever going to be used with one workspace, this makes things easier when auto-starting ROS on power up.
 
-## Workspace Setup 
+## Workspace Setup
 
 ```bash
 mkdir ~/ws
@@ -120,7 +120,7 @@ Added this to my personal account on GitHub.
 
 ### Building the Kobuki and Astra camera code
 
-I copied the `src` tree from my main laptop where the code already built and extracted it to the `~/ws/src` directory.  
+I copied the `src` tree from my main laptop where the code already built and extracted it to the `~/ws/src` directory.
 
 Then I tried to build it.  The following extra packages needed to be installed.
 
@@ -134,18 +134,18 @@ Then I tried to build it.  The following extra packages needed to be installed.
 This build completed.  When testing the Kobuki base, I got the following exception:
 
 ```bash
-$ ros2 launch turtlebot2_main turtlebot2-base.launch.py 
+$ ros2 launch turtlebot2_main turtlebot2-base.launch.py
 [INFO] [launch]: All log files can be found below /home/andy/.ros/log/
 ...
 [kobuki_ros_node-1] terminate called after throwing an instance of 'ecl::StandardException'
-[kobuki_ros_node-1]   what():  
-[kobuki_ros_node-1] Location : /home/andy/ws/src/kobuki_core/src/driver/kobuki.cpp:147 
-[kobuki_ros_node-1]          : /home/andy/ws/src/ecl_core/ecl_devices/src/lib/serial_pos.cpp:117 
+[kobuki_ros_node-1]   what():
+[kobuki_ros_node-1] Location : /home/andy/ws/src/kobuki_core/src/driver/kobuki.cpp:147
+[kobuki_ros_node-1]          : /home/andy/ws/src/ecl_core/ecl_devices/src/lib/serial_pos.cpp:117
 [kobuki_ros_node-1] Flag     : The caller does not have the required permissions.
 [kobuki_ros_node-1] Detail   : Could not open /dev/ttyUSB0. Access permission was denied.
 ```
 
-This was fixed using: 
+This was fixed using:
 
 ```bash
 sudo usermod -a -G dialout $USER
@@ -203,7 +203,7 @@ $ ros2 service list
 
 I wanted to use the `Nav2` stack for SLAM, so installed a bunch of packages:
 
-```bash 
+```bash
 sudo apt install -y \
 ros-lyrical-nav2-amcl \
 ros-lyrical-nav2-behavior-tree \
@@ -221,10 +221,10 @@ ros-lyrical-nav2-route \
 ros-lyrical-nav2-rviz-plugins \
 ros-lyrical-nav2-util \
 ros-lyrical-nav2-velocity-smoother \
-ros-lyrical-nav2-voxel-grid 
+ros-lyrical-nav2-voxel-grid
 ```
 
-This was because ROS Lyrical is missing the Nav2 meta package that installs the fullstack and more importantly it is also missing the `nav2_bringup` package.  This meant that I then had to clone the [`nav2` repo](https://github.com/ros-navigation/navigation2) and build the entire stack.  This has taken several hours. 
+This was because ROS Lyrical is missing the Nav2 meta package that installs the fullstack and more importantly it is also missing the `nav2_bringup` package.  This meant that I then had to clone the [`nav2` repo](https://github.com/ros-navigation/navigation2) and build the entire stack.  This has taken several hours.
 
 Also had to install these packages:
 
@@ -235,7 +235,7 @@ Also had to install these packages:
     sudo apt install ros-lyrical-nav2-minimal-tb3-sim"
 ```
 
-The build took many hours to complete. 
+The build took many hours to complete.
 
 ## Performance issues
 
@@ -245,10 +245,19 @@ I changed from using `colcon build` to using `colcon build --parallel-executors 
 
 Changed to this:
 
-```bash 
+```bash
 MAKEFLAGS="-j2 -l2" colcon build --executor sequential
 ```
 
 and I was able to edit while building.
 
+## SSH
 
+The laptop is a pain to use with code and Firefox, so decided to use SSH to access the robot from my workstation instead.
+
+Added SSH using
+
+``` bash
+sudo apt update
+sudo apt install ssh
+```
