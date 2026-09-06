@@ -52,8 +52,8 @@ def generate_launch_description():
         executable='depthimage_to_laserscan_node',
         name='depthimage_to_laserscan',
         remappings=[
-            ('depth', '/camera/depth/image_raw'),
-            ('depth_camera_info', '/camera/depth/camera_info'),
+            ('depth', '/depth/image_raw'),
+            ('depth_camera_info', '/depth/camera_info'),
             ('scan', '/scan')
         ],
         parameters=[{
