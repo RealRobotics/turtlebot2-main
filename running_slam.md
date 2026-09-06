@@ -58,13 +58,22 @@ Seem reasonable to me, so let start.
 >
 >1. Teleoperation Check. Drive the robot around using your keyboard or a joystick (teleop_twist_keyboard). Ensure the Kobuki base moves in the direction you expect and does not drift heavily.
 >2. Odometry Calibration. Drive the robot in a straight line for exactly 1 metre. Check the `/odom` topic data. Does the robot think it went 1 metre? Rotate 360 degrees and verify the odometry rotation matches reality.
+
+  Used `RQt` to plot the values of `/odom/pose/pose/position/x` and `/odom/pose/pose/position/y` to see what was happening.
+  `x` was was 99cm for the 100cm reported by odom, so probably good enough for now. There was also a steady increase in `y` during that 1m travel that matched fairly closely when it went back.  From observations, there is a small drift to the robot's left as it moves forward, about 6cm over the 1m from where it started.
 >3. Depth-to-Laser Conversion. Launch your Astra camera and your `depthimage_to_laserscan` node. Open `Rviz2` and add a LaserScan display. Verify that tables and walls show up as a flat 2D ring of points.
+
+Started the camera. Interestingly, the discovery only works once inside the laptop docker.  If you stop and start a ROS app, the discovery does not work the second time and comms are lost.  You need to restart the docker, then start the ROS apps on the bot.
+
+Started this `ros2 launch depthimage_to_laserscan depthimage_to_laserscan-launch.py`.  No output on `/scan` so that is the next problem to sort out.
+
+Also need to add step to the run everything launch file.
 >
 >### Phase 2: Manual Mapping (Passive SLAM)
 >
->In this phase, you test slam_toolbox while keeping full control over the robot's movements.
+>In this phase, you test `slam_toolbox` while keeping full control over the robot's movements.
 >
->4. Launch SLAM. Run your slam_toolbox node alongside your hardware drivers.
+>4. Launch SLAM. Run your `slam_toolbox` node alongside your hardware drivers.
 >5. Joystick Mapping. Drive the robot very slowly around a single room. In Rviz2, watch the map generate.
 >6. Loop Closure Test. Drive out of the room, come back in, and watch the map "snap" into alignment. If the map tears or gets corrupted, your robot is driving too fast, or your camera's frame rate is too low.
 >7. Map Saving. Use the nav2_map_server or the Rviz2 slam_toolbox plugin to save your map (map.yaml and map.pgm). Verify the files exist on your disk.
