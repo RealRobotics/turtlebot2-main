@@ -528,3 +528,22 @@ And it shows a lovely image of my hands and keyboard!  It works.  `RQt` and `RVi
 ## Testing 
 
 Created the `astra_camera.launch.py` file and tested the ORBBEC Astra camera.  Uses lots of CPU, about 110% to do the depth and colour camera feeds.  Just using the depth halves this.  The image shown in `rqt` is interesting.  My hand has seven or eight fingers depending on where I hold my hand!
+
+### Error message
+
+I got this error message when running the camera on the robot PC:
+
+```text
+[astra_camera_node-2] Warning: class_loader.impl: SEVERE WARNING!!! A namespace collision has occurred with plugin factory for class rclcpp_components::NodeFactoryTemplate<astra_camera::OBCameraNodeFactory>. New factory will OVERWRITE existing one. This situation occurs when libraries containing plugins are directly linked against an executable (the one running right now generating this message). Please separate plugins out into their own library or just don't link against the library and use either class_loader::ClassLoader/MultiLibraryClassLoader to open. [astra_camera_node-2] at line 322 in /opt/ros/lyrical/include/class_loader/class_loader/class_loader_core.hpp
+```
+
+Made this change but then there was an undefined reference.
+
+```diff
+ # 6. Shared library dependencies linking mapping
+-target_link_libraries(${PROJECT_NAME}_node PRIVATE ${PROJECT_NAME})
++# REMOVED: target_link_libraries(${PROJECT_NAME}_node PRIVATE ${PROJECT_NAME})
++# This target is an executable runner that dynamically loads plugins; linking it
++# directly causes class_loader plugin factory namespace collisions.
+```
+
