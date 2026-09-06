@@ -9,8 +9,8 @@
 * Run SLAM.
   * Break this down into smaller tasks? Steps 1 to 15 in slam doc.
     1. Done
-    2. In progress.
-    3. .
+    2. Done.
+    3. In progress.
     4. .
     5. .
     6. .
