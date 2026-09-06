@@ -253,11 +253,38 @@ and I was able to edit while building.
 
 ## SSH
 
-The laptop is a pain to use with code and Firefox, so decided to use SSH to access the robot from my workstation instead.
+The laptop is a pain to use with VSCode and Firefox, so decided to use SSH to access the robot from my workstation instead.
 
 Added SSH using
 
 ``` bash
 sudo apt update
 sudo apt install ssh
+```
+
+## Bugs
+
+### RViz2 fails
+
+In the docker terminal, start RVIz2 and see it fail!  The output look like this:
+
+```bash
+$ rviz2
+[ERROR] [1788714235.932682049] [rviz2]: Could not open file: /home/ubuntu/.rviz2/persistent_settings
+[INFO] [1788714237.264754953] [rviz2]: Stereo is NOT SUPPORTED
+[INFO] [1788714237.264824468] [rviz2]: OpenGl version: 4.6 (GLSL 4.6)
+[ERROR] [1788714237.303292939] [rviz2]: rviz::RenderSystem: error creating render window: RenderingAPIException: Invalid parentWindowHandle (wrong server or screen) in GLXWindow::create at ./.obj-x86_64-linux-gnu/ogre_vendor-prefix/src/ogre_vendor/RenderSystems/GLSupport/src/GLX/OgreGLXWindow.cpp (line 246)
+... x98
+[ERROR] [1788714237.306428927] [rviz2]: rviz::RenderSystem: error creating render window: RenderingAPIException: Invalid parentWindowHandle (wrong server or screen) in GLXWindow::create at ./.obj-x86_64-linux-gnu/ogre_vendor-prefix/src/ogre_vendor/RenderSystems/GLSupport/src/GLX/OgreGLXWindow.cpp (line 246)
+[ERROR] [1788714237.306433724] [rviz2]: Unable to create the rendering window after 100 tries
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  Unable to create the rendering window aft
+```
+
+Fixed by adding a new environment variable.
+
+```diff
+         -e DISPLAY=$DISPLAY \
++        -e QT_QPA_PLATFORM=xcb \
+         -v /tmp/.X11-unix:/tmp/.X11-unix:rw"
 ```

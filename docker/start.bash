@@ -41,6 +41,7 @@ else
         --volume ${WORKSPACE_DIR}:${CONTAINER_HOME}/ws \
         --gpus all \
         -e DISPLAY=$DISPLAY \
+        -e QT_QPA_PLATFORM=xcb \
         -v /tmp/.X11-unix:/tmp/.X11-unix:rw"
 
     # Mods for Orbec AStra camera.

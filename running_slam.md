@@ -65,9 +65,9 @@ Seem reasonable to me, so let start.
 
 Started the camera. Interestingly, the discovery only works once inside the laptop docker.  If you stop and start a ROS app, the discovery does not work the second time and comms are lost.  You need to restart the docker, then start the ROS apps on the bot.
 
-Started this `ros2 launch depthimage_to_laserscan depthimage_to_laserscan-launch.py`.  No output on `/scan` so that is the next problem to sort out.
+Created new launch file to test camera to scan, `astra_camera_to_scan.launch.py`.  Tested this and after sorting out the topic names, it produces data.
 
-Also need to add step to the run everything launch file.
+RViz2 works now but `/scan` is not shown.
 >
 >### Phase 2: Manual Mapping (Passive SLAM)
 >

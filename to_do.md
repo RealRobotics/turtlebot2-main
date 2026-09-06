@@ -10,7 +10,7 @@
   * Break this down into smaller tasks? Steps 1 to 15 in slam doc.
     1. Done
     2. Done.
-    3. In progress.
+    3. In progress. Topic working. RViz2 not showing `/scan`.
     4. .
     5. .
     6. .
