@@ -71,11 +71,22 @@ RViz2 works now but `/scan` is not shown.
 
 Finally figured out the problem.  The package `depthimage_to_laserscan` as installed with Lyrical Luth produces `nan` values.  I started to think about debugging this, so built the package locally from [source code](https://github.com/ros-perception/depthimage_to_laserscan), `ros2` branch, and tested it.  It worked with no changes other than the usual CMake version warning. Raised an issue #12 to fix this.
 
+To get the `/scan` topic data to show up in `RViz2`, you need to do the following quick fix (from Gemini):
+
+>Fix the `Fixed Frame` in RViz2Look at the Global Options panel at the top left of your RViz2 window.If your Fixed Frame is set to `map` or `odom`, but you aren't running an odometry node or SLAM yet, RViz2 will show nothing because the path between map and camera_link doesn't exist. The Quick Fix: Change the `Fixed Frame` text field directly from `map` to `camera_link`. This forces RViz2 to look at the world from the camera's perspective, instantly bypassing the need for a wider coordinate system.
+
+Did this quick fix and the `/scan` data was presented correctly.  Then added the link from `base_footprint` to `base_link`.
+
 >### Phase 2: Manual Mapping (Passive SLAM)
 >
 >In this phase, you test `slam_toolbox` while keeping full control over the robot's movements.
 >
 >4. Launch SLAM. Run your `slam_toolbox` node alongside your hardware drivers.
+
+The first step is to sort out the `tf` data otherwise nothing is going to work.  Added a new launch file `kobuki_base_camera_to_scan.launch.py` and added the XML needed to publish the static transforms for the camera and robot base from the `base_footprint` frame that the Kobuki base outputs.  When this is run, RViz2 properly shows the `/scan` data.
+
+Added a very simple body for the Koubuki base and the Astra camera to the `robot_description`.  Also saved the RViz2 config file.
+
 >5. Joystick Mapping. Drive the robot very slowly around a single room. In Rviz2, watch the map generate.
 >6. Loop Closure Test. Drive out of the room, come back in, and watch the map "snap" into alignment. If the map tears or gets corrupted, your robot is driving too fast, or your camera's frame rate is too low.
 >7. Map Saving. Use the nav2_map_server or the Rviz2 slam_toolbox plugin to save your map (map.yaml and map.pgm). Verify the files exist on your disk.
