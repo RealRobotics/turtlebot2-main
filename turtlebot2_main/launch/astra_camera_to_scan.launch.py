@@ -31,6 +31,7 @@ def generate_launch_description():
         output="both",
         # Copied these values from the defaults in the
         # astra.launch.xml file.
+        # There are many others, but those defaults work well enough.
         parameters=[{
             "camera_name": "camera",
             "enable_color": False,

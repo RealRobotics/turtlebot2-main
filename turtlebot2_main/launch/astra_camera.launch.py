@@ -29,8 +29,9 @@ def generate_launch_description():
         package="astra_camera",
         executable="astra_camera_node",
         output="both",
-        # Copied these values from the defaults in the 
+        # Copied these values from the defaults in the
         # astra.launch.xml file.
+        # There are many others, but those defaults work well enough.
         parameters=[{
             "camera_name": "camera",
             "enable_color": False,
