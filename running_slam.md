@@ -68,7 +68,9 @@ Started the camera. Interestingly, the discovery only works once inside the lapt
 Created new launch file to test camera to scan, `astra_camera_to_scan.launch.py`.  Tested this and after sorting out the topic names, it produces data.
 
 RViz2 works now but `/scan` is not shown.
->
+
+Finally figured out the problem.  The package `depthimage_to_laserscan` as installed with Lyrical Luth produces `nan` values.  I started to think about debugging this, so built the package locally from [source code](https://github.com/ros-perception/depthimage_to_laserscan), `ros2` branch, and tested it.  It worked with no changes other than the usual CMake version warning. Raised an issue #12 to fix this.
+
 >### Phase 2: Manual Mapping (Passive SLAM)
 >
 >In this phase, you test `slam_toolbox` while keeping full control over the robot's movements.
