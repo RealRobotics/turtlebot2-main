@@ -72,59 +72,14 @@ def generate_launch_description():
         }],
     )
 
-    # Use a minimal URDF to define the transform between the base_footprint
-    # and the camera_link frames.
-    # This is necessary for the depthimage_to_laserscan node to work correctly.
-    robot_description_xml = """<?xml version="1.0"?>
-        <robot name="turtlebot2_astra">
-            <!-- Material definitions for RViz2 coloring -->
-            <material name="dark_grey"><color rgba="0.2 0.2 0.2 1.0"/></material>
-            <material name="black"><color rgba="0.05 0.05 0.05 1.0"/></material>
-
-            <!-- 1. The ground-level frame published by the Kobuki driver -->
-            <link name="base_footprint" />
-
-            <!-- 2. The main physical chassis link -->
-            <link name="base_link">
-                <visual>
-                    <!-- Offset the visual slightly so it floats correctly above the floor -->
-                    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-                    <geometry>
-                        <!-- Kobuki physical dimensions: ~35cm diameter, ~9cm thick -->
-                        <cylinder radius="0.177" length="0.09"/>
-                    </geometry>
-                    <material name="dark_grey"/>
-                </visual>
-            </link>
-
-            <!-- 3. The Astra Camera frame -->
-            <link name="camera_link">
-                <visual>
-                    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-                    <geometry>
-                        <!-- Rough physical envelope of the Astra camera -->
-                        <box size="0.04 0.165 0.04"/>
-                    </geometry>
-                    <material name="black"/>
-                </visual>
-            </link>
-
-            <!-- Joint linking floor to chassis (Kobuki chassis sits 2cm above the ground) -->
-            <joint name="footprint_to_base_joint" type="fixed">
-                <parent link="base_footprint" />
-                <child link="base_link" />
-                <origin xyz="0.0 0.0 0.02" rpy="0.0 0.0 0.0" />
-            </joint>
-
-            <!-- Joint linking chassis to camera (Measuring upwards from the base link)
-                xyz = meters forward (x), left (y), and upward (z) from the base_link center -->
-            <joint name="base_to_camera_joint" type="fixed">
-                <parent link="base_link" />
-                <child link="camera_link" />
-                <origin xyz="0.16 0.0 0.17" rpy="0.0 0.0 0.0" />
-            </joint>
-        </robot>
-        """
+    # Load the robot description from the URDF file.
+    urdf_file_path = os.path.join(
+        ament_index_python.packages.get_package_share_directory("turtlebot2_main"),
+        "resource",
+        "turtlebot2_se.urdf"
+    )
+    with open(urdf_file_path, 'r') as urdf_file:
+        robot_description_xml = urdf_file.read()
 
     # Publish the robot description to the ROS system so that other nodes can use it.
     robot_state_publisher_node = Node(
