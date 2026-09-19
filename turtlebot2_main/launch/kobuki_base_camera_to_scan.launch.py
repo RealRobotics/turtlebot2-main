@@ -75,7 +75,7 @@ def generate_launch_description():
     # Load the robot description from the URDF file.
     urdf_file_path = os.path.join(
         ament_index_python.packages.get_package_share_directory("turtlebot2_main"),
-        "resource",
+        "urdf",
         "turtlebot2_se.urdf"
     )
     with open(urdf_file_path, 'r') as urdf_file:
