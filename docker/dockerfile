@@ -56,6 +56,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-tf2 \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Nav2 and SLAM Toolbox.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ros-${ROS_DISTRO}-navigation2 \
+        ros-${ROS_DISTRO}-nav2-bringup \
+        ros-${ROS_DISTRO}-slam-toolbox \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install Gazebo via the ROS metapackage.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \

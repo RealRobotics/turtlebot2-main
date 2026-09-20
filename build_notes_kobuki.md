@@ -1126,3 +1126,47 @@ ros2 run kobuki_keyop kobuki_keyop_node
 ```
 
 Instructions on use are shown after start up.
+
+## Updating Firmware
+
+The reported firmware version was 1.1.4 and the latest according to the [GitHub repo](https://github.com/kobuki-base/kobuki_firmware/tree/devel/firmware) is 1.2.0.
+
+Updating is discussed in detail [here](https://kobuki.readthedocs.io/en/devel/firmware.html).  These are the important commands:
+
+```bash
+# Download stm32flash-0.7.gz from https://sourceforge.net/projects/stm32flash/files/
+$ tar -xvzf stm32flash-0.7.tar.gz
+$ cd stm32flash
+$ make
+
+# Choose & download from https://github.com/kobuki-base/kobuki_firmware/tree/devel/firmware
+# e.g. latest
+$ wget --no-check-certificate --content-disposition https://github.com/kobuki-base/kobuki_firmware/blob/devel/firmware/kobuki_firmware_1.2.0-latest.hex?raw=true
+```
+
+Power off the robot, on the robot, flick the `Operation\Download` switch to `Download` and turn on again.  Now flash the device.
+
+```bash
+ ./stm32flash -b 115200 -w kobuki_firmware_1.2.0-latest.hex /dev/ttyUSB0
+```
+
+If all goes well, power off the robot, on the robot, flick the `Operation\Download` switch to `Operation` and turn on again.  Check the version by starting the base up using the `kobuki_base.launch.py` script and check that the firmware version is 1.2.0.
+
+### Malformed sub-payload detected
+
+Annoyingly, after updating the firmware from 1.14 to 1.2.0, I still get the following error messages:
+
+```text
+[kobuki_ros_node-1] [ERROR] [1789908434.327010211] [kobuki]: Malformed sub-payload detected. [14][170][0E AA 55 53 01 0F 38 ]
+[kobuki_ros_node-1] [ERROR] [1789908460.837141998] [kobuki]: Malformed sub-payload detected. [16][170][10 AA 55 4D 01 0F ]
+[kobuki_ros_node-1] [ERROR] [1789908467.980835259] [kobuki]: Malformed sub-payload detected. [212][170][D4 AA 55 4D 01 0F A0 1D 00 00 00 FE ]
+[kobuki_ros_node-1] [ERROR] [1789908471.081869921] [kobuki]: Malformed sub-payload detected. [227][170][E3 AA 55 4D 01 0F ]
+[kobuki_ros_node-1] [ERROR] [1789908512.502981768] [kobuki]: Malformed sub-payload detected. [237][170][ED AA 55 4D 01 0F 74 CB 00 00 00 FE FF FD FF 00 ]
+[kobuki_ros_node-1] [ERROR] [1789908536.353438516] [kobuki]: Malformed sub-payload detected. [143][170][8F AA 55 4D 01 0F 94 ]
+```
+
+There must be a mismatch somewhere else.
+
+Tracked it back to the function `Kobuki::fixPayload` in kobuki.cpp.  This function is called from about 10 different places, so more debugging is needed.
+
+Google Gemini thinks that the most likely cause of this is USB timing issues.  If so, there is no easy fix, so just ignore the error messages for now.  They aren't that frequent (one or two per minute) so we can live with that error rate.

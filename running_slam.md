@@ -87,13 +87,27 @@ The first step is to sort out the `tf` data otherwise nothing is going to work. 
 
 Added a very simple body for the Koubuki base and the Astra camera to the `robot_description`.  Also saved the RViz2 config file.
 
-Next is to launch the `slam_toolbox`.
+Next is to launch the `slam_toolbox`.  `slam_toolbox` is not installed on the PC docker or the robot.  Installed on both.
 
->5. Joystick Mapping. Drive the robot very slowly around a single room. In Rviz2, watch the map generate.
+```bash
+sudo apt install ros-${ROS_DISTRO}-slam-toolbox
+```
 
-Added a new launch file for the PC to do keyboard teleop using `kobuki_keyop`.
+Launch file now starts OK.
 
+```bash
+ros2 launch turtlebot2_main slam_toolbox.launch.py
+```
 
+This should publish the `/map` topic but it is not present. HERE!!!
+
+>5. Joystick Mapping. Drive the robot very slowly around a single room. In RViz2, watch the map generate.
+
+To do keyboard teleop using `kobuki_keyop`, you have to run the file instead of using a launch file.
+
+```sh
+ros2 run kobuki_keyop kobuki_keyop_node
+```
 
 >6. Loop Closure Test. Drive out of the room, come back in, and watch the map "snap" into alignment. If the map tears or gets corrupted, your robot is driving too fast, or your camera's frame rate is too low.
 >7. Map Saving. Use the nav2_map_server or the Rviz2 slam_toolbox plugin to save your map (map.yaml and map.pgm). Verify the files exist on your disk.
