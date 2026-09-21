@@ -1,38 +1,190 @@
 <?xml version="1.0"?>
-<!-- This URDF file describes the TurtleBot2 robot with an Astra camera.
-    It is a very basic model and is intended for use in simulation and visualization.
--->
+<!-- TurtleBot 2 Kobuki base with an Orbbec Astra camera. -->
 <robot name="turtlebot2_astra">
-  <material name="dark_grey"><color rgba="0.2 0.2 0.2 1.0"/></material>
-  <material name="black"><color rgba="0.05 0.05 0.05 1.0"/></material>
+  <material name="kobuki_grey">
+    <color rgba="0.28 0.30 0.31 1.0"/>
+  </material>
+  <material name="black">
+    <color rgba="0.04 0.04 0.04 1.0"/>
+  </material>
+  <material name="camera_grey">
+    <color rgba="0.12 0.14 0.15 1.0"/>
+  </material>
 
   <link name="base_footprint"/>
 
   <link name="base_link">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry><cylinder radius="0.177" length="0.09"/></geometry>
-      <material name="dark_grey"/>
+      <origin xyz="0 0 0.045"/>
+      <geometry>
+        <cylinder radius="0.178" length="0.09"/>
+      </geometry>
+      <material name="kobuki_grey"/>
     </visual>
+    <collision>
+      <origin xyz="0 0 0.045"/>
+      <geometry>
+        <cylinder radius="0.178" length="0.09"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0.045"/>
+      <mass value="2.4"/>
+      <inertia ixx="0.020" ixy="0.0" ixz="0.0" iyy="0.020" iyz="0.0" izz="0.038"/>
+    </inertial>
+  </link>
+
+  <link name="left_wheel_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.57079632679 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.018"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.57079632679 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.018"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.08"/>
+      <inertia ixx="0.00005" ixy="0.0" ixz="0.0" iyy="0.00005" iyz="0.0" izz="0.00005"/>
+    </inertial>
+  </link>
+
+  <link name="right_wheel_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.57079632679 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.018"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="1.57079632679 0 0"/>
+      <geometry>
+        <cylinder radius="0.035" length="0.018"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.08"/>
+      <inertia ixx="0.00005" ixy="0.0" ixz="0.0" iyy="0.00005" iyz="0.0" izz="0.00005"/>
+    </inertial>
+  </link>
+
+  <link name="front_caster_link">
+    <visual>
+      <origin xyz="0 0 -0.012"/>
+      <geometry>
+        <sphere radius="0.018"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.012"/>
+      <geometry>
+        <sphere radius="0.018"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.03"/>
+      <inertia ixx="0.000004" ixy="0.0" ixz="0.0" iyy="0.000004" iyz="0.0" izz="0.000004"/>
+    </inertial>
+  </link>
+
+  <link name="rear_caster_link">
+    <visual>
+      <origin xyz="0 0 -0.012"/>
+      <geometry>
+        <sphere radius="0.018"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.012"/>
+      <geometry>
+        <sphere radius="0.018"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.03"/>
+      <inertia ixx="0.000004" ixy="0.0" ixz="0.0" iyy="0.000004" iyz="0.0" izz="0.000004"/>
+    </inertial>
   </link>
 
   <link name="camera_link">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry><box size="0.04 0.165 0.04"/></geometry>
-      <material name="black"/>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.045 0.165 0.045"/>
+      </geometry>
+      <material name="camera_grey"/>
     </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.045 0.165 0.045"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.15"/>
+      <inertia ixx="0.00035" ixy="0.0" ixz="0.0" iyy="0.00005" iyz="0.0" izz="0.00035"/>
+    </inertial>
   </link>
+
+  <link name="camera_depth_frame"/>
+  <link name="camera_depth_optical_frame"/>
 
   <joint name="footprint_to_base_joint" type="fixed">
     <parent link="base_footprint"/>
     <child link="base_link"/>
-    <origin xyz="0 0 0.02" rpy="0 0 0"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel_link"/>
+    <origin xyz="0 0.145 0.035"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel_link"/>
+    <origin xyz="0 -0.145 0.035"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <joint name="front_caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_caster_link"/>
+    <origin xyz="0.13 0 0"/>
+  </joint>
+
+  <joint name="rear_caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="rear_caster_link"/>
+    <origin xyz="-0.13 0 0"/>
   </joint>
 
   <joint name="base_to_camera_joint" type="fixed">
     <parent link="base_link"/>
     <child link="camera_link"/>
-    <origin xyz="0.16 0 0.17" rpy="0 0 0"/>
+    <origin xyz="0.16 0 0.20"/>
+  </joint>
+
+  <joint name="camera_depth_joint" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_depth_frame"/>
+    <origin xyz="0 0 0"/>
+  </joint>
+
+  <!-- REP-103 optical frame: z forward, x right, y down. -->
+  <joint name="camera_depth_optical_joint" type="fixed">
+    <parent link="camera_depth_frame"/>
+    <child link="camera_depth_optical_frame"/>
+    <origin xyz="0 0 0" rpy="-1.57079632679 0 -1.57079632679"/>
   </joint>
 </robot>
