@@ -99,7 +99,31 @@ Launch file now starts OK.
 ros2 launch turtlebot2_main slam_toolbox.launch.py
 ```
 
-This should publish the `/map` topic but it is not present. HERE!!!
+This should publish the `/map` topic. Nav2 is not required for mapping. First check that `/scan`, `/tf`, and `/tf_static` are available and that the transform from `odom` to the scan frame can be resolved. Use RViz2 with `map` as the fixed frame once `slam_toolbox` is running.
+
+Nav2 is needed for the later navigation tests. The default Nav2 configuration selects the MPPI controller, which is unsuitable for this old PC and is unnecessary for a TurtleBot 2 with a differential-drive Kobuki base. Install Nav2 and the DWB controller:
+
+```bash
+sudo apt install ros-${ROS_DISTRO}-nav2-bringup ros-${ROS_DISTRO}-nav2-dwb-controller
+```
+
+The repository's [Nav2 parameter file](turtlebot2_main/config/nav2_params.yaml) is already installed with the `turtlebot2_main` package. It selects DWB and limits lateral velocity to zero, as required by the Kobuki base.
+
+Step 3: Launch Nav2 with the installed copy of the repository configuration:
+
+```bash
+ros2 launch nav2_bringup navigation_launch.py \
+  params_file:=$(ros2 pkg prefix turtlebot2_main)/share/turtlebot2_main/config/nav2_params.yaml
+```
+
+If the package has not been rebuilt since changing the YAML, rebuild and source the workspace first:
+
+```bash
+colcon build --packages-select turtlebot2_main
+source install/setup.bash
+```
+
+Confirm that the controller log names `dwb_core::DWBLocalPlanner` and does not attempt to load `nav2_mppi_controller`. Keep `use_sim_time: false` for the physical robot.
 
 >5. Joystick Mapping. Drive the robot very slowly around a single room. In RViz2, watch the map generate.
 

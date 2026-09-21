@@ -8,6 +8,8 @@
   <license>MIT</license>
 
   <exec_depend>kobuki_keyop</exec_depend>
+  <exec_depend>nav2_bringup</exec_depend>
+  <exec_depend>nav2_dwb_controller</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
