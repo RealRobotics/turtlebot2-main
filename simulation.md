@@ -29,4 +29,28 @@ source install/setup.bash
 ros2 launch turtlebot2_main urdf_rviz.launch.py
 ```
 
-This starts `robot_state_publisher` with `turtlebot2_se.urdf` and opens the saved RViz2 configuration. Set RViz2's fixed frame to `base_footprint` for this visualization-only test. No wheel motion or odometry is expected yet; those are added in the next simulation step.
+This starts `robot_state_publisher` with `turtlebot2_se.urdf` and opens the saved RViz2 configuration. The launch file also starts the lightweight differential-drive kinematic simulator. Set RViz2's fixed frame to `odom` to view the moving robot.
+
+The kinematic simulator:
+
+* subscribes to `/cmd_vel`;
+* publishes wheel positions on `/joint_states`, which makes the wheel joints move in RViz2;
+* publishes `/odom`; and
+* publishes the `odom -> base_footprint` transform.
+
+Build and source the package after changing the simulator:
+
+```bash
+colcon build --packages-select turtlebot2_main
+source install/setup.bash
+ros2 launch turtlebot2_main urdf_rviz.launch.py
+```
+
+In another terminal, send a short forward command:
+
+```bash
+ros2 topic pub --once /cmd_vel geometry_msgs/msg/Twist \
+	"{linear: {x: 0.1}, angular: {z: 0.0}}"
+```
+
+The simulator stops applying commands after 0.5 seconds without a fresh message. This stage provides kinematics only: it does not yet simulate collisions, wheel slip, or camera data. Those require Gazebo or another physics simulator.

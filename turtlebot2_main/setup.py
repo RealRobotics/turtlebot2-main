@@ -38,7 +38,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            # Add yours here...
+            "turtlebot2_kinematic_sim = turtlebot2_main.kinematic_sim:main",
         ],
     },
 )

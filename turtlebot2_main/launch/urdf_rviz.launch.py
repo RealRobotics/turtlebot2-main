@@ -39,6 +39,14 @@ def generate_launch_description():
         parameters=[{"use_sim_time": use_sim_time}],
     )
 
+    kinematic_sim = Node(
+        package="turtlebot2_main",
+        executable="turtlebot2_kinematic_sim",
+        name="turtlebot2_kinematic_sim",
+        output="screen",
+        parameters=[{"use_sim_time": use_sim_time}],
+    )
+
     return LaunchDescription(
         [
             DeclareLaunchArgument(
@@ -47,6 +55,7 @@ def generate_launch_description():
                 description="Use simulated time from the /clock topic.",
             ),
             robot_state_publisher,
+            kinematic_sim,
             rviz,
         ]
     )
