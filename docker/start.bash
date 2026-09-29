@@ -7,19 +7,31 @@ docker_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &>/dev/null && pwd )"
 
 mkdir -p ${WORKSPACE_DIR}
 
+# Refresh NVIDIA CDI mounts after driver updates.
+if ! sudo nvidia-ctk cdi generate --output=/var/run/cdi/nvidia.yaml
+then
+    echo "Failed to refresh NVIDIA CDI specification."
+    exit 1
+fi
+
 # Authorize the local container to access the display server.
 command -v xhost >/dev/null 2>&1 && xhost +SI:localuser:$(id -un) >/dev/null
 
-docker container inspect ${CONTAINER_NAME} &> /dev/null
-if [ $? == 0 ]
+CONTAINER_STATUS=$(docker container inspect -f '{{.State.Status}}' ${CONTAINER_NAME} 2>/dev/null)
+if [ "${CONTAINER_STATUS}" == "created" ]
 then
-    # Container exists.
-    if [ "$( docker container inspect -f '{{.State.Status}}' ${CONTAINER_NAME} )" == "running" ]
+    # A failed first start can leave stale runtime settings in a created container.
+    echo "Removing failed, never-started container '${CONTAINER_NAME}'."
+    docker container rm ${CONTAINER_NAME} &> /dev/null || exit 1
+    CONTAINER_STATUS=""
+fi
+
+if [ -n "${CONTAINER_STATUS}" ]
+then
+    if [ "${CONTAINER_STATUS}" == "running" ]
     then
-        # Container is running.
         echo "Container '${CONTAINER_NAME}' is already running."
     else
-        # Container exists but is not running.
         docker container start ${CONTAINER_NAME} &> /dev/null
         echo "Container '${CONTAINER_NAME}' started."
     fi
@@ -75,6 +87,8 @@ else
         -e __GLX_VENDOR_LIBRARY_NAME=nvidia \
         ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null"
 
+    echo "Starting container '${CONTAINER_NAME}'..."
+    # echo "Command: ${DOCKER_RUN_CMD}"
     eval "$DOCKER_RUN_CMD"
     if [ $? == 0 ]
     then
