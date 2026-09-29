@@ -39,6 +39,7 @@ setup(
     entry_points={
         "console_scripts": [
             "turtlebot2_kinematic_sim = turtlebot2_main.kinematic_sim:main",
+            "turtlebot2_synthetic_camera = turtlebot2_main.synthetic_camera:main",
         ],
     },
 )

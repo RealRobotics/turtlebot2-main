@@ -1,0 +1,15 @@
+synthetic_astra_camera:
+  ros__parameters:
+    width: 640
+    height: 480
+    frame_rate: 30.0
+    frame_id: camera_depth_optical_frame
+    focal_length_x: 570.0
+    focal_length_y: 570.0
+    principal_point_x: 319.5
+    principal_point_y: 239.5
+    background_depth_mm: 5000
+    obstacle_depth_mm: 1800
+    obstacle_center_x: 320
+    obstacle_width: 160
+    invalid_border: 4

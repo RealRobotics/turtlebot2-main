@@ -6,20 +6,20 @@ This is a to do list from VS code's agent.
 
 > Recommended development order
 >
-> * Improve the URDF with correct links, joints, visuals, collisions, and inertias.
-> * Display it in RViz2 using robot_state_publisher.
-> * Add simulated wheel movement and odometry.
-> * Add a simulated depth camera.
-> * Verify /scan through depthimage_to_laserscan.
-> * Run slam_toolbox and create a map.>
-> * Run Nav2 with your DWB configurati> on.>
-> * Test goals and obstacle avoidance > in > a small Gazebo world.>
-> * Replace the simple world with a mo> del>  of the ground floor.>
-> * Reuse the same Nav2 and SLAM param> ete> rs on the real robot.>
+> 1. Improve the URDF with correct links, joints, visuals, collisions, and inertias.
+> 2. Display it in RViz2 using robot_state_publisher.
+> 3. Add simulated wheel movement and odometry.
+> 4. Add a simulated depth camera.
+> 5. Verify /scan through depthimage_to_laserscan.
+> 6. Run slam_toolbox and create a map.
+> 7. Run Nav2 with your DWB configuration.
+> 8. Test goals and obstacle avoidance in a small Gazebo world.
+> 9. Replace the simple world with a model of the lab floor.
+> 10. Reuse the same Nav2 and SLAM parameters on the real robot.
 >
-> The most important design choice is to keep the real and sim> ulated systems using the same topic and frame names. Then simulation becomes a test environment for the existing TurtleBot 2 software rather than a separate application that must be maintained independently.
+> The most important design choice is to keep the real and simulated systems using the same topic and frame names. Then simulation becomes a test environment for the existing TurtleBot 2 software rather than a separate application that must be maintained independently.
 
-## First visualization test
+## First visualization test, 1,2,3
 
 The improved URDF can now be checked in RViz2 before adding physics or simulated sensors. Build and source the package, then run:
 
@@ -54,3 +54,49 @@ ros2 topic pub --once /cmd_vel geometry_msgs/msg/Twist \
 ```
 
 The simulator stops applying commands after 0.5 seconds without a fresh message. This stage provides kinematics only: it does not yet simulate collisions, wheel slip, or camera data. Those require Gazebo or another physics simulator.
+
+## Add simulated depth camera
+
+The first camera simulation uses a lightweight ROS node rather than Gazebo. It
+publishes a deterministic Astra-like depth image and camera calibration, so the
+same depth-to-laserscan and SLAM pipeline can be exercised before adding a
+physics simulator.
+
+Build and source the package:
+
+```bash
+colcon build --packages-select turtlebot2_main depthimage_to_laserscan
+source install/setup.bash
+```
+
+Start the simulated robot, camera, and laser scan pipeline:
+
+```bash
+ros2 launch turtlebot2_main simulated_camera.launch.py
+```
+
+The simulated camera publishes:
+
+* `/depth/image_raw` as a `sensor_msgs/msg/Image` with `16UC1` millimetre data;
+* `/depth/camera_info` as matching `sensor_msgs/msg/CameraInfo`; and
+* `/scan` through `depthimage_to_laserscan`.
+
+The image frame is `camera_depth_optical_frame`. The scan is published in
+`camera_depth_frame`, using the camera links already defined in
+`turtlebot2_se.urdf`.
+
+Check the topics and camera contract from another terminal:
+
+```bash
+ros2 topic hz /depth/image_raw
+ros2 topic echo /depth/camera_info --once
+ros2 topic echo /scan --once
+ros2 run tf2_ros tf2_echo base_link camera_depth_optical_frame
+```
+
+The default synthetic scene has a 5 m background, a central obstacle at 1.8 m,
+and a small invalid border. Parameters are in
+`turtlebot2_main/config/synthetic_camera.yaml`. This phase does not model
+collisions, optical noise, or rendered geometry. A future Gazebo camera should
+replace only the producer while preserving the `/depth/...` topics and camera
+frame contract.
