@@ -19,7 +19,7 @@ This is a to do list from VS code's agent.
 >
 > The most important design choice is to keep the real and simulated systems using the same topic and frame names. Then simulation becomes a test environment for the existing TurtleBot 2 software rather than a separate application that must be maintained independently.
 
-## First visualization test, 1,2,3
+## First visualization test (1,2,3)
 
 The improved URDF can now be checked in RViz2 before adding physics or simulated sensors. Build and source the package, then run:
 
@@ -55,7 +55,7 @@ ros2 topic pub --once /cmd_vel geometry_msgs/msg/Twist \
 
 The simulator stops applying commands after 0.5 seconds without a fresh message. This stage provides kinematics only: it does not yet simulate collisions, wheel slip, or camera data. Those require Gazebo or another physics simulator.
 
-## Add simulated depth camera
+## Add simulated depth camera (4,5)
 
 The first camera simulation uses a lightweight ROS node rather than Gazebo. It
 publishes a deterministic Astra-like depth image and camera calibration, so the
@@ -100,3 +100,61 @@ and a small invalid border. Parameters are in
 collisions, optical noise, or rendered geometry. A future Gazebo camera should
 replace only the producer while preserving the `/depth/...` topics and camera
 frame contract.
+
+## Run SLAM Toolbox (6)
+
+The simulated camera stack can be started together with the synchronous SLAM
+Toolbox mapper. Build and source the workspace after changing the launch files:
+
+```bash
+colcon build --packages-select turtlebot2_main depthimage_to_laserscan
+source install/setup.bash
+```
+
+Start the simulated robot, camera, laser scan, RViz2, and SLAM Toolbox:
+
+```bash
+ros2 launch turtlebot2_main simulated_slam.launch.py
+```
+
+The launch file uses wall time by default because the kinematic simulator does
+not publish `/clock`. To use a simulator that provides `/clock`, pass:
+
+```bash
+ros2 launch turtlebot2_main simulated_slam.launch.py use_sim_time:=true
+```
+
+Drive the robot slowly from another terminal so SLAM Toolbox receives scans at
+different poses:
+
+```bash
+ros2 topic pub --rate 10 /cmd_vel geometry_msgs/msg/Twist \
+	"{linear: {x: 0.1}, angular: {z: 0.0}}"
+```
+
+Stop the command with Ctrl-C, then turn the robot and drive another short
+segment:
+
+```bash
+ros2 topic pub --rate 10 /cmd_vel geometry_msgs/msg/Twist \
+	"{linear: {x: 0.0}, angular: {z: 0.4}}"
+```
+
+Check that the mapper is publishing a map and that scans are still arriving:
+
+```bash
+ros2 topic echo /map --once
+ros2 topic hz /scan
+ros2 topic echo /slam_toolbox/graph_visualization --once
+```
+
+Save the map from a separate terminal after exploring the area:
+
+```bash
+mkdir -p ~/maps
+ros2 run nav2_map_server map_saver_cli -f ~/maps/turtlebot2_sim
+```
+
+The current synthetic scene is deterministic and intentionally simple. This
+validates the scan, odometry, TF, and SLAM wiring; meaningful room-scale maps
+will require a richer scene model or the planned Gazebo simulation.

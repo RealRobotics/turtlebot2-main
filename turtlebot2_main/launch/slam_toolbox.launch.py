@@ -1,9 +1,12 @@
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 def generate_launch_description():
+    use_sim_time = LaunchConfiguration("use_sim_time")
 
     # SLAM Toolbox Configuration
     # Use the standard online synchronous parameters from slam_toolbox.
@@ -19,7 +22,7 @@ def generate_launch_description():
             slam_params_file,
             {
                 # Overriding specific parameter tweaks for an RPi4 environment
-                'use_sim_time': False,
+                'use_sim_time': use_sim_time,
                 'max_laser_range': 5.0,     # Match the Astra's constraint
                 'minimum_time_interval': 0.1,
                 'mode': 'mapping'
@@ -27,6 +30,11 @@ def generate_launch_description():
         ]
     )
 
-    ld = LaunchDescription()
-    ld.add_action(slam_toolbox_node)
-    return ld
+    return LaunchDescription([
+        DeclareLaunchArgument(
+            "use_sim_time",
+            default_value="false",
+            description="Use simulated time from the /clock topic.",
+        ),
+        slam_toolbox_node,
+    ])
