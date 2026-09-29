@@ -7,13 +7,6 @@ docker_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &>/dev/null && pwd )"
 
 mkdir -p ${WORKSPACE_DIR}
 
-# Refresh NVIDIA CDI mounts after driver updates.
-if ! sudo nvidia-ctk cdi generate --output=/var/run/cdi/nvidia.yaml
-then
-    echo "Failed to refresh NVIDIA CDI specification."
-    exit 1
-fi
-
 # Authorize the local container to access the display server.
 command -v xhost >/dev/null 2>&1 && xhost +SI:localuser:$(id -un) >/dev/null
 
@@ -88,12 +81,15 @@ else
         ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null"
 
     echo "Starting container '${CONTAINER_NAME}'..."
-    # echo "Command: ${DOCKER_RUN_CMD}"
     eval "$DOCKER_RUN_CMD"
     if [ $? == 0 ]
     then
         echo "Container '${CONTAINER_NAME}' running."
     else
         echo "Container '${CONTAINER_NAME}' failed."
+        echo "To find out what went wrong, comment out the ' &> /dev/null' "
+        echo "at the end of the DOCKER_RUN_CMD.  Then run this script again "
+        echo "to see the full command that was executed along with any error "
+        echo "messages."
     fi
 fi
