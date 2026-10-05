@@ -1,6 +1,19 @@
 from array import array
 
 
+def obstacle_depth_from_pose(
+    robot_x,
+    obstacle_world_x,
+    background_depth_mm,
+    minimum_obstacle_distance_mm,
+):
+    """Return the forward obstacle range for the simple virtual world."""
+    distance_mm = int(round((obstacle_world_x - robot_x) * 1000.0))
+    if distance_mm < minimum_obstacle_distance_mm:
+        return background_depth_mm
+    return min(distance_mm, background_depth_mm)
+
+
 def generate_depth_image(
     width,
     height,

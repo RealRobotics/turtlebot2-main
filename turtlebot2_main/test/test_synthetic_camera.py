@@ -1,6 +1,15 @@
 from array import array
 
-from turtlebot2_main.depth_scene import generate_depth_image
+from turtlebot2_main.depth_scene import (
+    generate_depth_image,
+    obstacle_depth_from_pose,
+)
+
+
+def test_obstacle_range_changes_with_robot_pose():
+    assert obstacle_depth_from_pose(0.0, 2.0, 5000, 300) == 2000
+    assert obstacle_depth_from_pose(0.5, 2.0, 5000, 300) == 1500
+    assert obstacle_depth_from_pose(2.0, 2.0, 5000, 300) == 5000
 
 
 def test_depth_image_has_expected_scene_values():

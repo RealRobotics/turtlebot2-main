@@ -1,8 +1,12 @@
 import rclpy
+from nav_msgs.msg import Odometry
 from rclpy.node import Node
 from sensor_msgs.msg import CameraInfo, Image
 
-from turtlebot2_main.depth_scene import generate_depth_image
+from turtlebot2_main.depth_scene import (
+    generate_depth_image,
+    obstacle_depth_from_pose,
+)
 
 
 class SyntheticAstraCamera(Node):
@@ -17,8 +21,9 @@ class SyntheticAstraCamera(Node):
         self.declare_parameter("focal_length_y", 570.0)
         self.declare_parameter("principal_point_x", 319.5)
         self.declare_parameter("principal_point_y", 239.5)
-        self.declare_parameter("background_depth_mm", 5000)
-        self.declare_parameter("obstacle_depth_mm", 1800)
+        self.declare_parameter("background_depth_mm", 3000)
+        self.declare_parameter("obstacle_world_x", 2.0)
+        self.declare_parameter("minimum_obstacle_distance_mm", 300)
         self.declare_parameter("obstacle_center_x", 320)
         self.declare_parameter("obstacle_width", 160)
         self.declare_parameter("invalid_border", 4)
@@ -38,28 +43,42 @@ class SyntheticAstraCamera(Node):
         self.background_depth_mm = int(
             self.get_parameter("background_depth_mm").value
         )
-        self.obstacle_depth_mm = int(
-            self.get_parameter("obstacle_depth_mm").value
+        self.obstacle_world_x = float(
+            self.get_parameter("obstacle_world_x").value
+        )
+        self.minimum_obstacle_distance_mm = int(
+            self.get_parameter("minimum_obstacle_distance_mm").value
         )
         self.obstacle_center_x = int(
             self.get_parameter("obstacle_center_x").value
         )
         self.obstacle_width = int(self.get_parameter("obstacle_width").value)
         self.invalid_border = int(self.get_parameter("invalid_border").value)
+        self.robot_x = 0.0
 
+        self.create_subscription(Odometry, "odom", self.odometry_callback, 10)
         self.image_publisher = self.create_publisher(Image, "depth/image_raw", 10)
         self.camera_info_publisher = self.create_publisher(
             CameraInfo, "depth/camera_info", 10
         )
         self.create_timer(1.0 / self.frame_rate, self.publish_camera_data)
 
+    def odometry_callback(self, message):
+        self.robot_x = message.pose.pose.position.x
+
     def publish_camera_data(self):
         stamp = self.get_clock().now().to_msg()
+        obstacle_depth_mm = obstacle_depth_from_pose(
+            self.robot_x,
+            self.obstacle_world_x,
+            self.background_depth_mm,
+            self.minimum_obstacle_distance_mm,
+        )
         depth = generate_depth_image(
             self.width,
             self.height,
             self.background_depth_mm,
-            self.obstacle_depth_mm,
+            obstacle_depth_mm,
             self.obstacle_center_x,
             self.obstacle_width,
             self.invalid_border,

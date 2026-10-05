@@ -23,12 +23,23 @@
     13. .
     14. .
     15. .
+* Run simulation.  Steps 1 to 10 in [simulation doc](simulation.md).
+  1. Done
+  2. Done
+  3. Done
+  4. Done
+  5. Done
+  6. Done
+  7. 
+  8. 
+  9. 
+  10. 
 
 ## ROS things to fix
 
 * Nav2
-  * No `ros-lyrical-navigate2` package.
-  * No `ros-lyrical-nav2-bringup` package.
+  * No `ros-lyrical-navigate2` package.  Present now.
+  * No `ros-lyrical-nav2-bringup` package.  Present now.
 * RQt really sucks on the old laptop.  Uses 110% CPU  (from 400%) and barely responds.
 
 ## Kobuki

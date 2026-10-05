@@ -8,8 +8,9 @@ synthetic_astra_camera:
     focal_length_y: 570.0
     principal_point_x: 319.5
     principal_point_y: 239.5
-    background_depth_mm: 5000
-    obstacle_depth_mm: 1800
+    background_depth_mm: 3000
+    obstacle_world_x: 2.0
+    minimum_obstacle_distance_mm: 300
     obstacle_center_x: 320
     obstacle_width: 160
     invalid_border: 4

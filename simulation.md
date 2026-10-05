@@ -94,12 +94,14 @@ ros2 topic echo /scan --once
 ros2 run tf2_ros tf2_echo base_link camera_depth_optical_frame
 ```
 
-The default synthetic scene has a 5 m background, a central obstacle at 1.8 m,
-and a small invalid border. Parameters are in
-`turtlebot2_main/config/synthetic_camera.yaml`. This phase does not model
-collisions, optical noise, or rendered geometry. A future Gazebo camera should
-replace only the producer while preserving the `/depth/...` topics and camera
-frame contract.
+The default synthetic scene has a 3 m background, a central world-fixed
+obstacle at x=2.0 m, and a small invalid border. Its apparent depth therefore
+decreases as the robot drives forward. Parameters are in
+`turtlebot2_main/config/synthetic_camera.yaml`. The current scene follows only
+the robot's forward x position; turning does not yet move the obstacle across
+the image. This phase also does not model collisions, optical noise, or
+rendered geometry. A future Gazebo camera should replace only the producer
+while preserving the `/depth/...` topics and camera frame contract.
 
 ## Run SLAM Toolbox (6)
 
@@ -117,15 +119,13 @@ Start the simulated robot, camera, laser scan, RViz2, and SLAM Toolbox:
 ros2 launch turtlebot2_main simulated_slam.launch.py
 ```
 
-The launch file uses wall time by default because the kinematic simulator does
-not publish `/clock`. To use a simulator that provides `/clock`, pass:
+The launch file uses wall time by default because the kinematic simulator does not publish `/clock`. To use a simulator that provides `/clock`, pass:
 
 ```bash
 ros2 launch turtlebot2_main simulated_slam.launch.py use_sim_time:=true
 ```
 
-Drive the robot slowly from another terminal so SLAM Toolbox receives scans at
-different poses:
+Drive the robot slowly from another terminal so SLAM Toolbox receives scans at different poses:
 
 ```bash
 ros2 topic pub --rate 10 /cmd_vel geometry_msgs/msg/Twist \
@@ -143,10 +143,18 @@ ros2 topic pub --rate 10 /cmd_vel geometry_msgs/msg/Twist \
 Check that the mapper is publishing a map and that scans are still arriving:
 
 ```bash
-ros2 topic echo /map --once
+ros2 topic list | grep -E '^/(scan|map)$'
+ros2 node list | grep slam_toolbox
+ros2 lifecycle get /slam_toolbox
+ros2 topic info /scan
+ros2 topic echo /scan --once
 ros2 topic hz /scan
+ros2 run tf2_ros tf2_echo odom camera_depth_frame
+ros2 topic echo /map --once
 ros2 topic echo /slam_toolbox/graph_visualization --once
 ```
+
+The map is generated after SLAM Toolbox receives a scan and can resolve the `odom -> camera_depth_frame` transform. If `/scan` is not listed, or the TF check fails, fix that upstream path before checking `/map` again.
 
 Save the map from a separate terminal after exploring the area:
 
@@ -155,6 +163,4 @@ mkdir -p ~/maps
 ros2 run nav2_map_server map_saver_cli -f ~/maps/turtlebot2_sim
 ```
 
-The current synthetic scene is deterministic and intentionally simple. This
-validates the scan, odometry, TF, and SLAM wiring; meaningful room-scale maps
-will require a richer scene model or the planned Gazebo simulation.
+The current synthetic scene is deterministic and intentionally simple. This validates the scan, odometry, TF, and SLAM wiring; meaningful room-scale maps will require a richer scene model or the planned Gazebo simulation.

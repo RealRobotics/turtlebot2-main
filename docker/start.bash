@@ -31,6 +31,7 @@ then
 else
     # Container does not exist.
     mkdir -p ${WORKSPACE_DIR}
+    mkdir -p "${WORKSPACE_DIR}/.vscode-server"
 
     # Use host's XDG_RUNTIME_DIR for Wayland socket, or fall back to /tmp
     HOST_XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/tmp}
@@ -44,6 +45,7 @@ else
         --ipc=host \
         --name ${CONTAINER_NAME} \
         --volume ${WORKSPACE_DIR}:${CONTAINER_HOME}/ws \
+        --volume ${WORKSPACE_DIR}/.vscode-server:${CONTAINER_HOME}/.vscode-server \
         --gpus all \
         -e DISPLAY=$DISPLAY \
         -e QT_QPA_PLATFORM=xcb \
@@ -81,6 +83,7 @@ else
         ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} &> /dev/null"
 
     echo "Starting container '${CONTAINER_NAME}'..."
+    # echo "Command: ${DOCKER_RUN_CMD}"
     eval "$DOCKER_RUN_CMD"
     if [ $? == 0 ]
     then
