@@ -70,6 +70,11 @@ RUN apt-get update \
         ros-${ROS_DISTRO}-ros-gz \
     && rm -rf /var/lib/apt/lists/*
 
+# Finally, do a full upgrade to ensure all packages are up to date.
+RUN apt-get update \
+    && apt-get full-upgrade -y \
+    && rm -rf /var/lib/apt/lists/*
+
 # nvidia-container-runtime
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=graphics,display,compute,utility
