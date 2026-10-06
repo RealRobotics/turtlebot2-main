@@ -9,12 +9,14 @@ from launch.actions import (
 from launch.events import matches_action
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import LifecycleNode
+from launch_ros.parameter_descriptions import ParameterValue
 from launch_ros.event_handlers import OnStateTransition
 from launch_ros.events.lifecycle import ChangeState
 from lifecycle_msgs.msg import Transition
 
 def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time")
+    max_laser_range = LaunchConfiguration("max_laser_range")
 
     # SLAM Toolbox Configuration
     # Use the standard online synchronous parameters from slam_toolbox.
@@ -38,7 +40,7 @@ def generate_launch_description():
                 # Overriding specific parameter tweaks for an RPi4 environment
                 'use_sim_time': use_sim_time,
                 'use_lifecycle_manager': False,
-                'max_laser_range': 5.0,     # Match the Astra's constraint
+                'max_laser_range': ParameterValue(max_laser_range, value_type=float),
                 'minimum_time_interval': 0.1,
                 'minimum_travel_distance': 0.0,
                 'minimum_travel_heading': 0.0,
@@ -85,6 +87,11 @@ def generate_launch_description():
             "use_sim_time",
             default_value="false",
             description="Use simulated time from the /clock topic.",
+        ),
+        DeclareLaunchArgument(
+            "max_laser_range",
+            default_value="5.0",
+            description="Maximum scan range used by SLAM (Astra camera: 5.0).",
         ),
         slam_toolbox_node,
         configure_slam_toolbox,

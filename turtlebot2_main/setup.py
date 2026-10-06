@@ -26,6 +26,10 @@ setup(
             os.path.join('share', package_name, 'urdf'),
             glob(os.path.join('urdf', '*'))
         ),
+        (
+            os.path.join('share', package_name, 'worlds'),
+            glob(os.path.join('worlds', '*'))
+        ),
     ],
     install_requires=["setuptools"],
     zip_safe=True,
