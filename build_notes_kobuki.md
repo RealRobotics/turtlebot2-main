@@ -998,6 +998,31 @@ add_definitions(-DEIGEN_DONT_ALIGN)
 
 Not an ideal solution as the code should be fixed properly, but it is not my code so this will do for now.
 
+When I rebuilt later, I had several errors in the `sophus` package build like this:
+
+```bash
+In file included from /home/ubuntu/ws/src/sophus/test/ceres/tests.hpp:6,
+                 from /home/ubuntu/ws/src/sophus/test/ceres/test_ceres_rxso2.cpp:5:
+/home/ubuntu/ws/src/sophus/sophus/ceres_local_parameterization.hpp:3:10: fatal error: ceres/local_parameterization.h: No such file or directory
+    3 | #include <ceres/local_parameterization.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+```
+
+Asked Copilot to fix it and this is what it did:
+
+>Fixed the Sophus/Ceres compatibility issue.
+>
+>Changes
+>- Updated ceres_local_parameterization.hpp to:
+>- Use ceres::Manifold when modern Ceres provides ceres/manifold.h.
+>- Preserve compatibility with older Ceres versions using ceres::LocalParameterization.
+>- Implement modern Plus, PlusJacobian, Minus, and MinusJacobian APIs.
+>- Handle one-dimensional tangent spaces correctly with Eigen.
+>Updated CMakeLists.txt to avoid treating GCC’s Eigen -Wdangling-pointer false positives as errors on GCC 12+.
+
+Builds now. Changes committed.
+
 ## Testing the code
 
 To test the Kobuki base, start using this command:
@@ -1008,7 +1033,7 @@ $ ros2 launch turtlebot2_main turtlebot2-base.launch.py
 
 When the Kobuki base connects to this ROS program, the base plays and ascending tune.  When disconnected, there a a short pause and then the base plays a descending tune.
 
-If you don't hea r the tone, then check the output for something like this:
+If you don't hear the tone, then check the output for something like this:
 
 ```bash
 $ ros2 launch turtlebot2_main turtlebot2-base.launch.py
