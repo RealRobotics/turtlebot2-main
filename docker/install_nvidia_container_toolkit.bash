@@ -29,6 +29,13 @@ sudo apt-get update && sudo apt-get install -y nvidia-container-toolkit
 sudo nvidia-ctk runtime configure --runtime=docker
 sudo systemctl restart docker
 
+# Refresh NVIDIA CDI mounts.  Re-run this after driver updates.
+if ! sudo nvidia-ctk cdi generate --output=/var/run/cdi/nvidia.yaml
+then
+    echo "Failed to refresh NVIDIA CDI specification."
+    exit 1
+fi
+
 # Run the test program.
 sudo docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi
 
