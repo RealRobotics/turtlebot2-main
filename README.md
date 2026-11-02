@@ -10,7 +10,7 @@ Tested using
 
 ## Objective
 
-To run the Turtlebot2 using a Raspberry Pi4 or an old laptop.  The robot should then be able to map the room and navigate between two set points avoiding obstacles and replanning as required.
+To run the Turtlebot2 using a Raspberry Pi4 or 5 or a laptop.  The robot should then be able to map the room and navigate between two set points avoiding obstacles and replanning as required.
 
 ## Setup and building
 
@@ -24,6 +24,8 @@ The code was originally built on a fast workstation inside a docker image.  [Ins
 A laptop was intended to be used to control the TurtleBot2, so that is what I used first.  The installation notes can be found [here](pc_installation.md) that includes building the ROS Nav2 stack. 
 
 The next job was to get the robot to run.  This process is documented [here](running_slam.md).
+
+I also created a simulation of the robot and that process is documented [here](simulation.md).
 
 ## Acknowledgments
 

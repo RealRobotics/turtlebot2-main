@@ -17,6 +17,7 @@ then
     docker build \
         --build-arg UID=${HOST_UID} \
         --build-arg GID=${HOST_GID} \
+        --no-cache \
         -t ${DOCKER_HUB_USER_NAME}/${IMAGE_NAME}:${IMAGE_TAG} \
         -f dockerfile \
         .

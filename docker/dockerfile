@@ -26,13 +26,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Install extra ROS2 packages.
+# Qt6 xcb platform plugin (used by rviz2 etc.) requires libxcb-cursor0.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         python3-vcstool \
         ros-${ROS_DISTRO}-diagnostic-updater \
-    && rm -rf /var/lib/apt/lists/*
-
-# Qt6 xcb platform plugin (used by rviz2 etc.) requires libxcb-cursor0.
-RUN apt-get update && apt-get install -y --no-install-recommends \
         libxcb-cursor0 \
     && rm -rf /var/lib/apt/lists/*
 
